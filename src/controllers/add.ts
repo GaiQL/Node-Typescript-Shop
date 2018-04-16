@@ -47,6 +47,7 @@ export let findOne = ( req:Request,res:Response ) => {
   let promise = model.findById('5ad0752b42a4eb0c5c1851c6').exec();
   promise.then(( data:UserModelIF )=>{
     data.username = '啧啧啧啧啧啧';
+    console.log( data.save() );
     return data.save(); // returns a promise
   })
   .then(( data:UserModelIF )=>{

@@ -1,12 +1,14 @@
 
 
 let config = require('config');
-var Dotenv = require('dotenv');
-var mongoose = require('mongoose');
-import { Request, Response, NextFunction } from 'express';  // import @types?
+// var Dotenv = require('dotenv');
+// var mongoose = require('mongoose');
+// import { Request, Response, NextFunction } from 'express';  // import @types?
 //...
 import express from 'express';
-
+import mongoose from 'mongoose';
+import Dotenv from 'dotenv';
+import lusca from "lusca";
 
 // var express = require('express');
 var router = express.Router();
@@ -17,13 +19,16 @@ app.listen(2000);
 
 mongoose.connect('mongodb://localhost/myblog');//连接上 myblog 数据库
 mongoose.Promise = require('bluebird');   //Promise化
-
 mongoose.connection.on("error", function ( error:Error ) {
   console.log("数据库连接失败：" + error)
 })
 mongoose.connection.on("open", function () {
   console.log("数据库连接成功")
 })
+
+app.use(lusca.xframe("SAMEORIGIN"));
+app.use(lusca.xssProtection(true));
+
 
 
 import * as Fn_Add from './controllers/add';
