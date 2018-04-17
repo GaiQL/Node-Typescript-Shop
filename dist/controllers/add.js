@@ -26,6 +26,8 @@ exports.findAll = (req, res) => {
         if (err)
             return console.log(err);
         console.log(data);
+        res.status(200);
+        res.send(data);
         res.end();
     });
 };
@@ -44,6 +46,7 @@ exports.findOne = (req, res) => {
     let promise = user_1.default.findById('5ad0752b42a4eb0c5c1851c6').exec();
     promise.then((data) => {
         data.username = '啧啧啧啧啧啧';
+        console.log(data.save());
         return data.save(); // returns a promise
     })
         .then((data) => {

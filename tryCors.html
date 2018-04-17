@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <script type="text/javascript">
+    var obj = new XMLHttpRequest();
+    obj.open("GET", 'http://localhost:2000/find',true);//window.baseUrl + 'product/detail.do?product_id=1'
+    obj.send(null);
+    // obj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    obj.onreadystatechange = () => {
+    		if( obj.readyState == 4 ) {
+    				let data = JSON.parse(obj.response);
+    				console.log(data);
+    		}
+    }
+    </script>
+  </body>
+</html>

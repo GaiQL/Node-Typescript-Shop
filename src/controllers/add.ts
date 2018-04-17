@@ -26,6 +26,8 @@ export let findAll = ( req:Request,res:Response ) => {
   model.find(( err:Error,data:UserModelIF )=>{
     if( err ) return console.log( err );
     console.log( data );
+    res.status(200);
+    res.send( data );
     res.end();
   })
 }
@@ -43,7 +45,7 @@ export let findOne = ( req:Request,res:Response ) => {
   // })
 
   // promise处理：
-  
+
   let promise = model.findById('5ad0752b42a4eb0c5c1851c6').exec();
   promise.then(( data:UserModelIF )=>{
     data.username = '啧啧啧啧啧啧';
