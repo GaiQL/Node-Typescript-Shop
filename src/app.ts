@@ -7,9 +7,12 @@ let config = require('config');
 //...
 import express from 'express';
 import mongoose from 'mongoose';
+import bodyParser from "body-parser";
 import Dotenv from 'dotenv';
 import lusca from "lusca";
 import path from "path";
+import compression from "compression";
+import { Request,Response,NextFunction } from 'express';
 
 // var express = require('express');
 var router = express.Router();
@@ -27,16 +30,22 @@ mongoose.connection.on("open", function () {
   console.log("数据库连接成功")
 })
 
+app.use(compression());
+
 app.use(lusca.xframe("SAMEORIGIN"));
 app.use(lusca.xssProtection(true));
 
+
 // app.use(express.static('public'));
+
+app.use(bodyParser.urlencoded({extended:false}))  //解析UTF-8的编码的数据。  会使用querystring库解析URL编码的数据
+app.use(bodyParser.json())   //解析json数据
 
 app.use(
   express.static(path.join(__dirname, "public"), { maxAge: 31557600000 })
 );
 
-// 跨域解决方案， cors设置白名单限制；
+// 潦草的跨域解决方案， cors设置白名单限制；
 app.all('*', function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
@@ -46,8 +55,10 @@ app.all('*', function(req, res, next) {
   next();
 });
 
+
 import * as Fn_Add from './controllers/add';
 import * as Fn_Home from './controllers/index';
+import * as Fn_Login from './controllers/login';
 
 
 
@@ -56,7 +67,36 @@ app.get('/',Fn_Home.Home);
 app.get('/add',Fn_Add.Add);
 app.get('/find',Fn_Add.findAll);
 app.get('/findOne',Fn_Add.findOne);
-app.get('/homepage.do',)
+app.post('/login.do',Fn_Login.login);
+
+
+// 错误处理
+function logErrors( err:Error, req:Request, res:Response, next:NextFunction ) {
+  console.error(err.stack);
+  next(err);
+}
+function clientErrorHandler( err:Error, req:Request, res:Response, next:NextFunction ) {
+  if (req.xhr) {
+    //是ajax请求返回这个  500信息  不是的话交给下一个 500信息处理
+    res.status(500).send({ error: 'Something failed!' });
+  } else {
+    next(err);
+  }
+}
+function errorHandler( err:Error, req:Request, res:Response, next:NextFunction ) {
+  // res.status(500);
+  res.send({
+    status:500,
+    message:err,
+    data:null
+  });
+  res.end();
+}
+app.use( logErrors );
+app.use( clientErrorHandler );
+app.use( errorHandler );
+
+
 
 
 var dbConfig = config;

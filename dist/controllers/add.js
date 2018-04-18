@@ -21,13 +21,19 @@ exports.Add = (req, res) => {
         res.end();
     });
 };
-exports.findAll = (req, res) => {
+exports.findAll = (req, res, next) => {
     user_1.default.find((err, data) => {
+        // err = new Error('something is broken');
         if (err)
-            return console.log(err);
-        console.log(data);
-        res.status(200);
-        res.send(data);
+            return next(err);
+        console.log(req);
+        // res.status(500);  //  浏览器产生的状态码;
+        let expressionData = {
+            status: 200,
+            data: data,
+            message: '哈哈哈'
+        };
+        res.send(expressionData);
         res.end();
     });
 };
@@ -45,7 +51,7 @@ exports.findOne = (req, res) => {
     // promise处理：
     let promise = user_1.default.findById('5ad0752b42a4eb0c5c1851c6').exec();
     promise.then((data) => {
-        data.username = '啧啧啧啧啧啧';
+        data.account = '啧啧啧啧啧啧';
         console.log(data.save());
         return data.save(); // returns a promise
     })

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>实事求是</title>
+		<script src="build/jquery-1.11.2.min.js"></script>
+		<style>
+			body,img,p,ul,li,ol,dl{margin:0;padding:0;}
+			ol,ul,li,dl{list-style-type:none;}s,b,i{font-style:normal;}
+			body{font-size:14px;color:#333;}
+			.c-header{width:100%;background-color:#fff;height:65px;}
+			.c-cnt{overflow:hidden;width:1200px;margin:0 auto;}
+			.h-left,.h-right{overflow:hidden;}
+			.h-left{float:left;width:40%;}
+			.h-left>div{float:left;}
+			.h-left>.logo{width:50px;height:60px;margin:7px 15px 0 0;}.logo>img{width:100%;}
+			.h-left>.title>.text{font-size:20px;padding:4px 0;}
+			.h-left>.title>.info{color:#999;font-size:13px;}
+			.h-right{float:right;margin-top:30px;}
+			.content-box{}
+			.bg-img{width:100%;display:inline-block;position:relative;min-width:1200px;}.bg-img>img{width:100%;}
+			.bg-img>.box-btn{position:absolute;top:30px;width:1200px;margin-left:-600px;left:50%;background:red;}
+			.btn-box{width:350px;background:#fff;position:absolute;top:0;right:0;border-radius:2px;padding:30px}
+			.btn-box>.title{font-size:22px;letter-spacing:2px;margin-bottom: 20px;}
+			.btnList>li{border:1px solid #e4e4e4;width:100%;overflow:hidden;height:40px;}
+			.btnList>.last{border-top:none;}
+			.btnList .name,.btnList .pwd{background-image:url("images/loginIcons.gif");background-repeat:no-repeat;display:block;height:40px;width:40px;float:left;}
+			.btnList .name{background-position:-35px 6px;}
+			.btnList .pwd{background-position:8px 6px;}
+			.btnList .input{height:40px;width:300px;float:left;margin-left:10px;}
+			.btnList .input>input{border:none;outline:none;height:40px;width:95%;padding:0;}
+			.operatePwd{margin:10px 0;overflow:hidden;}
+			.operatePwd>.wjPwd{float:left;}
+			.operatePwd>.noPwd,.createName>.noPwd{float:right;display:inline-block;color:#0099ff;cursor:pointer;}
+			.operatePwd>.noPwd:hover,.createName>.noPwd:hover{text-decoration:underline;}
+			.submit{width:100%;height:50px;line-height:50px;color:#fff;background-color:#108ee9;text-align:center;border-radius:5px;margin:40px 0 20px 0;}
+			.createName{text-align:right;}
+
+			.serveList{overflow:hidden;width:1200px;margin:100px auto;}
+			.serveList>li{float:left;width:33.3%;}
+			.serveList .icon{width:60px;height:60px;margin:0 auto;background-image:url("images/loginIcons.gif");background-repeat:no-repeat;}
+			.icon.anmo{background-position:-84px 7px;}
+			.icon.meir{background-position:-227px 7px;}
+			.icon.paidui{background-position:-154px 7px;}
+			.serveList .name{color:#000;font-size:20px;display:block;width:100%;text-align:center;height:50px; line-height:50px;margin-bottom:10px;}
+			.serveList .info{text-align:center;color:#999;font-size:16px;}
+			.footer{
+				height:100px;
+				line-height:100px;
+				text-align:center;
+				color:#fff;
+				background-color:#666;
+			}
+
+			.mengban{ background:rgba(0,0,0,0.5) no-repeat; width:100%; height:100%; position:fixed; left:0; bottom:0; display:none;  z-index:9999;}
+			.jh-xiaxian{ width:556px; position:fixed; top:20%; left:60%; margin-left:-278px; display:none;  z-index:99999;}
+
+		</style>
+	</head>
+	<body onkeydown="on_return();">
+		<div className="content-box">
+			<div class="bg-img">
+				<!-- <video src="hi.mp4" autoplay style="width:100%;height:700px"></video> -->
+				<div style="width:100%;height:700px"></div>
+				<div class="box-btn">
+					<div class="btn-box">
+						<p class="title">登录</p>
+						<ol class="btnList">
+							<li>
+								<i class="name"></i>
+								<div class="input"><input type="text"  name="account"  id="account"  placeholder="企业名称/邮箱" /></div>
+							</li>
+							<li class="last">
+								<i class="pwd"></i>
+								<div class="input"><input type="password"  name="password"  id="password"   placeholder="密码" /></div>
+							</li>
+						</ol>
+						<div class="operatePwd"><div class="wjPwd"><input type="checkbox" />记住账号</div>  <a href="editPwd/resetLoginPwd.html" class="noPwd">忘记密码</a> </div>
+						<div  class="submit"  id="sub" href="javascript:void(0);">登录</div>
+						<p class="createName"><span>还没有账号？</span><span class="noPwd">立即注册</span></p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<footer class="footer" style="padding:0 30px">
+			<p>神奇的网站  | 完全符合社会主义核心价值观的阿姆斯特朗回旋式加速科技有限公司 京XXX备XXXXXXXX号-1 ~~~~ XXXXXXXXXX号</p>
+		</footer>
+
+		<script type="text/javascript">
+
+			var strFullPath=window.document.location.href;
+			var strPath=window.document.location.pathname;
+			var pos=strFullPath.indexOf(strPath);
+			var prePath=strFullPath.substring(0,pos);
+			var postPath=strPath.substring(0,strPath.substr(1).indexOf('/')+1);
+
+			var path = prePath +postPath ;
+
+				$("#sub").click(function() {
+				 if(loginFormValid()){
+					var password = document.getElementById("password").value;
+					// password = MD5(password);
+					 $.post(
+							path+'/login.do',{'account':$.trim($("#account").val()),'verify':$.trim($("#verify").val()),'password':password},
+							function(data){
+								console.log( data );
+								if(data.status==200){
+									var obj=data.data;
+									 window.location.href=path+'/toIndex.do';
+									/*  document.location.href="index.html";  */
+								} else {
+									alert(data.data);
+								}
+
+						});
+				}
+			});
+
+
+
+			function loginFormValid(){
+				if(!$.trim($("#account").val())){
+					alert("请输入企业名称或者邮箱");
+					return false;
+				}
+				if(!$.trim($('#password').val())){
+					alert("密码不能为空");
+					return false;
+				}
+				return true;
+			}
+
+			 function on_return(){
+				 if(window.event.keyCode == 13){
+					 if (document.all('sub')!=null){
+						 document.all('sub').click();
+						 }
+					 }
+			 }
+		</script>
+	</body>
+</html>

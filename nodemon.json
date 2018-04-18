@@ -1,0 +1,18 @@
+{
+    "restartable": "rs",
+    "verbose": false,
+    "env": {
+        "NODE_ENV": "development",
+        "PORT": "2000"
+    },
+    "execMap": {
+        "": "node --debug",
+        "js": "node --debug"
+    },
+    "watch": [
+        "dist/"
+    ],
+    "ignore": [
+        "node_modules"
+    ]
+}

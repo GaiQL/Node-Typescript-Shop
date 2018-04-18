@@ -8,11 +8,8 @@ const mongoose_1 = __importDefault(require("mongoose"));
 // 拿到数据后会用定义的类型去存储，但是有些不能转换，boolean
 var userSchema = new mongoose_1.default.Schema({
     // email: { type: String, unique: true },
-    email: String,
-    username: String,
-    password: Number,
-    arr: Array,
-    boolean: Boolean
+    account: String,
+    password: Number
 });
 userSchema.pre('save', (next) => {
     console.log('i save you');
