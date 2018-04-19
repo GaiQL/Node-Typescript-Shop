@@ -12,6 +12,7 @@ import Dotenv from 'dotenv';
 import lusca from "lusca";
 import path from "path";
 import compression from "compression";
+import passport from "passport";
 import { Request,Response,NextFunction } from 'express';
 
 // var express = require('express');
@@ -41,6 +42,8 @@ app.use(lusca.xssProtection(true));
 app.use(bodyParser.urlencoded({extended:false}))  //解析UTF-8的编码的数据。  会使用querystring库解析URL编码的数据
 app.use(bodyParser.json())   //解析json数据
 
+
+
 app.use(
   express.static(path.join(__dirname, "public"), { maxAge: 31557600000 })
 );
@@ -54,7 +57,8 @@ app.all('*', function(req, res, next) {
   res.header("Content-Type", "application/json;charset=utf-8");
   next();
 });
-
+app.use(passport.initialize());
+// app.use(passport.session());
 
 import * as Fn_Add from './controllers/add';
 import * as Fn_Home from './controllers/index';
@@ -67,7 +71,8 @@ app.get('/',Fn_Home.Home);
 app.get('/add',Fn_Add.Add);
 app.get('/find',Fn_Add.findAll);
 app.get('/findOne',Fn_Add.findOne);
-app.post('/login.do',Fn_Login.login);
+app.post('/login.do',Fn_Login.loginVerification,Fn_Login.login);
+app.get('/save',Fn_Login.save);
 
 
 // 错误处理

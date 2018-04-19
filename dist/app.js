@@ -21,6 +21,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const lusca_1 = __importDefault(require("lusca"));
 const path_1 = __importDefault(require("path"));
 const compression_1 = __importDefault(require("compression"));
+const passport_1 = __importDefault(require("passport"));
 // var express = require('express');
 var router = express_1.default.Router();
 var app = express_1.default();
@@ -49,6 +50,8 @@ app.all('*', function (req, res, next) {
     res.header("Content-Type", "application/json;charset=utf-8");
     next();
 });
+app.use(passport_1.default.initialize());
+// app.use(passport.session());
 const Fn_Add = __importStar(require("./controllers/add"));
 const Fn_Home = __importStar(require("./controllers/index"));
 const Fn_Login = __importStar(require("./controllers/login"));
@@ -56,7 +59,8 @@ app.get('/', Fn_Home.Home);
 app.get('/add', Fn_Add.Add);
 app.get('/find', Fn_Add.findAll);
 app.get('/findOne', Fn_Add.findOne);
-app.post('/login.do', Fn_Login.login);
+app.post('/login.do', Fn_Login.loginVerification, Fn_Login.login);
+app.get('/save', Fn_Login.save);
 // 错误处理
 function logErrors(err, req, res, next) {
     console.error(err.stack);

@@ -53,9 +53,10 @@ export let findOne = ( req:Request,res:Response ) => {
 
   // promise处理：
 
-  let promise = model.findById('5ad0752b42a4eb0c5c1851c6').exec();
+  let promise = model.findById('5ad85286da304821284ff22b').exec();
   promise.then(( data:UserModelIF )=>{
-    data.account = '啧啧啧啧啧啧';
+    data.account = 'xiaomingming123123';
+    data.password = '123456';
     console.log( data.save() );
     return data.save(); // returns a promise
   })

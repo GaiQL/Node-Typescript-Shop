@@ -2,8 +2,8 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
-		<title>实事求是</title>
-		<script src="build/jquery-1.11.2.min.js"></script>
+		<title>马克思主义哲学的精髓是</title>
+		<script src="https://cdn.bootcss.com/jquery/3.3.0/jquery.min.js"></script>
 		<style>
 			body,img,p,ul,li,ol,dl{margin:0;padding:0;}
 			ol,ul,li,dl{list-style-type:none;}s,b,i{font-style:normal;}
@@ -24,7 +24,7 @@
 			.btn-box>.title{font-size:22px;letter-spacing:2px;margin-bottom: 20px;}
 			.btnList>li{border:1px solid #e4e4e4;width:100%;overflow:hidden;height:40px;}
 			.btnList>.last{border-top:none;}
-			.btnList .name,.btnList .pwd{background-image:url("images/loginIcons.gif");background-repeat:no-repeat;display:block;height:40px;width:40px;float:left;}
+			/* .btnList .name,.btnList .pwd{background-image:url("images/loginIcons.gif");background-repeat:no-repeat;display:block;height:40px;width:40px;float:left;} */
 			.btnList .name{background-position:-35px 6px;}
 			.btnList .pwd{background-position:8px 6px;}
 			.btnList .input{height:40px;width:300px;float:left;margin-left:10px;}
@@ -38,7 +38,7 @@
 
 			.serveList{overflow:hidden;width:1200px;margin:100px auto;}
 			.serveList>li{float:left;width:33.3%;}
-			.serveList .icon{width:60px;height:60px;margin:0 auto;background-image:url("images/loginIcons.gif");background-repeat:no-repeat;}
+			/* .serveList .icon{width:60px;height:60px;margin:0 auto;background-image:url("images/loginIcons.gif");background-repeat:no-repeat;} */
 			.icon.anmo{background-position:-84px 7px;}
 			.icon.meir{background-position:-227px 7px;}
 			.icon.paidui{background-position:-154px 7px;}
@@ -107,7 +107,7 @@
 								console.log( data );
 								if(data.status==200){
 									var obj=data.data;
-									 window.location.href=path+'/toIndex.do';
+									 window.location.href = path;
 									/*  document.location.href="index.html";  */
 								} else {
 									alert(data.data);
