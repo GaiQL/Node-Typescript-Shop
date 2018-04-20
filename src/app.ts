@@ -12,11 +12,21 @@ import Dotenv from 'dotenv';
 import lusca from "lusca";
 import path from "path";
 import compression from "compression";
+import swig from 'swig';
+
+// http://ju.outofmemory.cn/entry/99459  passport好文；
 import passport from "passport";
+import passportLocal from "passport-local";
 import { Request,Response,NextFunction } from 'express';
 
 // var express = require('express');
-var router = express.Router();
+// var router = express.Router();
+
+import * as passportConfig from "./congfig/passport";
+import * as Fn_Add from './controllers/add';
+import * as Fn_Home from './controllers/index';
+import * as Fn_Login from './controllers/login';
+import { default as model,UserModelIF } from './models/user';
 
 var app = express();
 
@@ -36,6 +46,11 @@ app.use(compression());
 app.use(lusca.xframe("SAMEORIGIN"));
 app.use(lusca.xssProtection(true));
 
+app.engine('html', swig.renderFile);
+app.set('view engine', 'html');
+swig.setDefaults({ cache: false });
+
+passport.use(passportConfig.LocalStrategyMethod());
 
 // app.use(express.static('public'));
 
@@ -44,9 +59,10 @@ app.use(bodyParser.json())   //解析json数据
 
 
 
-app.use(
-  express.static(path.join(__dirname, "public"), { maxAge: 31557600000 })
-);
+app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }));
+
+app.use( passportConfig.isAuthenticated );
+app.use( ()=>{console.log(123);} );
 
 // 潦草的跨域解决方案， cors设置白名单限制；
 app.all('*', function(req, res, next) {
@@ -60,18 +76,14 @@ app.all('*', function(req, res, next) {
 app.use(passport.initialize());
 // app.use(passport.session());
 
-import * as Fn_Add from './controllers/add';
-import * as Fn_Home from './controllers/index';
-import * as Fn_Login from './controllers/login';
-
-
 
 app.get('/',Fn_Home.Home);
 
 app.get('/add',Fn_Add.Add);
 app.get('/find',Fn_Add.findAll);
 app.get('/findOne',Fn_Add.findOne);
-app.post('/login.do',Fn_Login.loginVerification,Fn_Login.login);
+app.get('/login',Fn_Login.loginGet);
+app.post('/login.do',Fn_Login.login);
 app.get('/save',Fn_Login.save);
 
 

@@ -2,18 +2,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt-nodejs";
 //    Mongoose 中的 Schema 和 Model  ;
-
-//   Schema类型：
-// String
-// Number
-// Date
-// Buffer
-// Boolean
-// Mixed
-// ObjectId
-// Array
-// new mongoose.Schema
-
 export interface UserModelIF extends mongoose.Document{
   account: string,
   password: string,
@@ -52,6 +40,7 @@ userSchema.pre('save',function( next:any ){
 
 type ComparePassword = ( candidatePassword: string, cb: (err: any, isMatch: any ) => any ) => void;
 let ComparePassword:ComparePassword = function ( candidatePassword, callback ){
+  console.log( candidatePassword,this.password );
   bcrypt.compare(candidatePassword,this.password,( err: mongoose.Error, isMatch: boolean )=>{
     callback( err,isMatch );
   });

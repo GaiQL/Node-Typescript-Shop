@@ -105,12 +105,12 @@
 							path+'/login.do',{'account':$.trim($("#account").val()),'verify':$.trim($("#verify").val()),'password':password},
 							function(data){
 								console.log( data );
-								if(data.status==200){
+								if(data.status == 200){
 									var obj=data.data;
 									 window.location.href = path;
 									/*  document.location.href="index.html";  */
 								} else {
-									alert(data.data);
+									alert(data.message);
 								}
 
 						});

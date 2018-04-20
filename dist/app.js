@@ -21,9 +21,15 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const lusca_1 = __importDefault(require("lusca"));
 const path_1 = __importDefault(require("path"));
 const compression_1 = __importDefault(require("compression"));
+const swig_1 = __importDefault(require("swig"));
+// http://ju.outofmemory.cn/entry/99459  passport好文；
 const passport_1 = __importDefault(require("passport"));
 // var express = require('express');
-var router = express_1.default.Router();
+// var router = express.Router();
+const passportConfig = __importStar(require("./congfig/passport"));
+const Fn_Add = __importStar(require("./controllers/add"));
+const Fn_Home = __importStar(require("./controllers/index"));
+const Fn_Login = __importStar(require("./controllers/login"));
 var app = express_1.default();
 app.listen(2000);
 mongoose_1.default.connect('mongodb://localhost/myblog'); //连接上 myblog 数据库
@@ -37,10 +43,16 @@ mongoose_1.default.connection.on("open", function () {
 app.use(compression_1.default());
 app.use(lusca_1.default.xframe("SAMEORIGIN"));
 app.use(lusca_1.default.xssProtection(true));
+app.engine('html', swig_1.default.renderFile);
+app.set('view engine', 'html');
+swig_1.default.setDefaults({ cache: false });
+passport_1.default.use(passportConfig.LocalStrategyMethod());
 // app.use(express.static('public'));
 app.use(body_parser_1.default.urlencoded({ extended: false })); //解析UTF-8的编码的数据。  会使用querystring库解析URL编码的数据
 app.use(body_parser_1.default.json()); //解析json数据
 app.use(express_1.default.static(path_1.default.join(__dirname, "public"), { maxAge: 31557600000 }));
+app.use(passportConfig.isAuthenticated);
+app.use(() => { console.log(123); });
 // 潦草的跨域解决方案， cors设置白名单限制；
 app.all('*', function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -52,14 +64,12 @@ app.all('*', function (req, res, next) {
 });
 app.use(passport_1.default.initialize());
 // app.use(passport.session());
-const Fn_Add = __importStar(require("./controllers/add"));
-const Fn_Home = __importStar(require("./controllers/index"));
-const Fn_Login = __importStar(require("./controllers/login"));
 app.get('/', Fn_Home.Home);
 app.get('/add', Fn_Add.Add);
 app.get('/find', Fn_Add.findAll);
 app.get('/findOne', Fn_Add.findOne);
-app.post('/login.do', Fn_Login.loginVerification, Fn_Login.login);
+app.get('/login', Fn_Login.loginGet);
+app.post('/login.do', Fn_Login.login);
 app.get('/save', Fn_Login.save);
 // 错误处理
 function logErrors(err, req, res, next) {

@@ -33,6 +33,7 @@ userSchema.pre('save', function (next) {
     });
 });
 let ComparePassword = function (candidatePassword, callback) {
+    console.log(candidatePassword, this.password);
     bcrypt_nodejs_1.default.compare(candidatePassword, this.password, (err, isMatch) => {
         callback(err, isMatch);
     });

@@ -22,6 +22,7 @@
     "@types/node": "^9.6.4",
     "@types/passport": "^0.4.5",
     "@types/passport-local": "^1.0.33",
+    "@types/swig": "0.0.29",
     "babel-core": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
     "bcrypt-nodejs": "0.0.3",
@@ -36,6 +37,7 @@
     "mongoose": "^5.0.14",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
+    "swig": "^1.4.2",
     "ts-node": "^5.0.1",
     "typescript": "^2.8.1"
   },

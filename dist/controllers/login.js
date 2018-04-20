@@ -6,26 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const user_1 = __importDefault(require("../models/user"));
 const check_1 = require("express-validator/check");
 const passport_1 = __importDefault(require("passport"));
-// export let login = ( req:Request,res:Response,next:NextFunction ) => {
-//   console.log( req.body );
-//   let data = new model({
-//     account:req.body.account,
-//     password:req.body.password
-//   })
-//   data.save(( err )=>{
-//     if( err ) return next(err);
-//     let data = {
-//       message:'注册成功'
-//     }
-//     res.send( data );
-//     res.end();
-//   })
-// }
 exports.loginVerification = [
-    check_1.body('account', '最少四位数').isLength({ min: 4 }),
-    check_1.body('password', '数字').isLength({ min: 4, max: 20 }).matches(/^\d+$/)
+    check_1.body('account', '最少四位字符').isLength({ min: 4 }),
+    check_1.body('password', '密码为4-20个数字字符').isLength({ min: 4, max: 20 }).matches(/^\d+$/)
 ];
 exports.login = (req, res, next) => {
+    //有了 passport ，在登录中验证可以放弃 express-validator 了
     const errors = check_1.validationResult(req);
     if (!errors.isEmpty()) {
         res.send({
@@ -36,48 +22,31 @@ exports.login = (req, res, next) => {
         res.end();
         // return res.status(422).json({ errors: errors.mapped() });
     }
-    console.log(req.body);
-    console.log(req.isAuthenticated());
     passport_1.default.authenticate("local", (err, user, info) => {
         if (err) {
             return next(err);
         }
         if (!user) {
-            // req.flash("errors", info.message);
-            console.log('errors');
-            return res.redirect("/login");
+            res.send({ status: 500, message: info.message });
+            res.end();
+            return;
         }
         req.logIn(user, (err) => {
             if (err) {
                 return next(err);
             }
-            console.log('success');
-            // req.flash("success", { msg: "Success! You are logged in." });
-            // res.redirect("/");
+            res.send({ status: 200, message: info.message });
+            res.end();
         });
     })(req, res, next);
-    // let promise = model.findOne({
-    //   account:req.body.account,
-    //   password:req.body.password
-    // }).exec();
-    // promise.then(( data:UserModelIF )=>{
-    //   console.log(data);
-    //   if( data ){
-    //     res.send({ status:200 , data:'登陆成功' });
-    //   }else{
-    //     res.send({ status:500 , data:'用户名或密码不正确' });
-    //   }
-    //   res.end();
-    // })
-    // .catch(( err:Error )=>{
-    //   next(err);
-    //   console.log(err);
-    // })
+};
+exports.loginGet = (req, res, next) => {
+    res.render('../public/login.html');
 };
 exports.save = (req, res, next) => {
     let newData = new user_1.default({
-        account: 'xiaohong123123',
-        password: '123456123123'
+        account: 'xiaoming',
+        password: '123456'
     });
     newData.save((err) => {
         if (err)

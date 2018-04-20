@@ -15,44 +15,41 @@ passport_1.default.deserializeUser((id, done) => {
         done(err, user);
     });
 });
-passport_1.default.use(new LocalStrategy(function (username, password, done) {
-    user_1.default.findOne({ account: username }, function (err, user) {
-        if (err) {
-            return done(err);
-        }
-        if (!user) {
-            return done(null, false);
-        }
-        user.comparePassword(password, (err, isMatch) => {
+exports.LocalStrategyMethod = () => {
+    return new LocalStrategy({
+        usernameField: 'account',
+        passwordField: 'password',
+        session: false
+    }, function (username, password, done) {
+        user_1.default.findOne({ account: username }, function (err, user) {
             if (err) {
+                console.log('err');
                 return done(err);
             }
-            if (isMatch) {
-                return done(undefined, user);
+            if (!user) {
+                console.log('!user');
+                return done(null, false, { message: "没有此用户哦！" });
             }
-            return done(undefined, false, { message: "Invalid email or password." });
+            user.comparePassword(password, (err, isMatch) => {
+                // 字段没有用bcrypt-nodejs加密时，进行对比会抛处err；
+                if (err) {
+                    console.log('hi');
+                    return done(err);
+                }
+                if (isMatch) {
+                    return done(undefined, user, { message: "登录成功！" });
+                }
+                return done(undefined, false, { message: "您输入的密码有误！" });
+            });
+            // return done(null, user);
         });
-        return done(null, user);
     });
-}));
-// passport.use(new LocalStrategy({
-//     usernameField: "account"
-//   },
-//   (account, password, done) => {
-//     model.findOne({ account:account }, (err, user:UserModelIF) => {
-//       if (err) { return done(err); }
-//       if (!user) {
-//         return done(undefined, false, { message: `Account ${account} not found.` });
-//       }
-//       console.log( user.password );
-//       user.comparePassword(password, (err: Error, isMatch: boolean) => {
-//         if (err) { return done(err); }
-//         if (isMatch) {
-//           return done(undefined, user);
-//         }
-//         return done(undefined, false, { message: "Invalid email or password." });
-//       });
-//     });
-//   }
-// ));
+};
+exports.isAuthenticated = (req, res, next) => {
+    console.log(req.isAuthenticated());
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.send('<script>alert("123")</script>');
+};
 //# sourceMappingURL=passport.js.map

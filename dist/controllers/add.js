@@ -38,30 +38,27 @@ exports.findAll = (req, res, next) => {
     });
 };
 exports.findOne = (req, res) => {
-    // model.findById('5ad0752b42a4eb0c5c1851c6',( err:Error,data:UserModelIF )=>{
-    //   if( err ) return console.log( err );
-    //   data.username = '啧啧啧啧啧啧';
-    //   data.save(( err:Error )=>{
-    //     if( err ) return console.log( err );
-    //     console.log('修改成功')
-    //   })
-    //   console.log( data );
-    //   res.end();
-    // })
-    // promise处理：
-    let promise = user_1.default.findById('5ad85286da304821284ff22b').exec();
-    promise.then((data) => {
-        data.account = 'xiaomingming123123';
-        data.password = '123456';
-        console.log(data.save());
-        return data.save(); // returns a promise
-    })
-        .then((data) => {
-        console.log('修改成功');
-    })
-        .catch((err) => {
-        console.log(err);
+    user_1.default.findById('5ad95040ae419c2908248e4e', (err, data) => {
+        if (err)
+            return console.log(err);
+        console.log('what');
+        console.log(data);
+        res.end();
     });
+    // promise处理：
+    // let promise = model.findById('5ad85286da304821284ff22b').exec();
+    // promise.then(( data:UserModelIF )=>{
+    //   data.account = 'xiaomingming123123';
+    //   data.password = '123456';
+    //   console.log( data.save() );
+    //   return data.save(); // returns a promise
+    // })
+    // .then(( data:UserModelIF )=>{
+    //   console.log('修改成功');
+    // })
+    // .catch(( err:Error )=>{
+    //   console.log( err );
+    // })
 };
 // export let getApi = (req: Request, res: Response) => {
 //   res.render("api/index", {
