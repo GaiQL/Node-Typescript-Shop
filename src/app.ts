@@ -12,7 +12,9 @@ import Dotenv from 'dotenv';
 import lusca from "lusca";
 import path from "path";
 import compression from "compression";
-import swig from 'swig';
+import ejs from 'ejs';
+import session from "express-session";
+import mongo from "connect-mongo";
 
 // http://ju.outofmemory.cn/entry/99459  passport好文；
 import passport from "passport";
@@ -32,12 +34,16 @@ var app = express();
 
 app.listen(2000);
 
+Dotenv.config({ path: ".env.example" });
+
+let MongoStore = mongo(session);
+
 mongoose.connect('mongodb://localhost/myblog');//连接上 myblog 数据库
 mongoose.Promise = require('bluebird');   //Promise化
-mongoose.connection.on("error", function ( error:Error ) {
+mongoose.connection.on("error", function( error:Error ){
   console.log("数据库连接失败：" + error)
 })
-mongoose.connection.on("open", function () {
+mongoose.connection.on("open", function(){
   console.log("数据库连接成功")
 })
 
@@ -46,9 +52,9 @@ app.use(compression());
 app.use(lusca.xframe("SAMEORIGIN"));
 app.use(lusca.xssProtection(true));
 
-app.engine('html', swig.renderFile);
+app.engine('html', ejs.renderFile);
+app.set('views',__dirname +'/public')
 app.set('view engine', 'html');
-swig.setDefaults({ cache: false });
 
 passport.use(passportConfig.LocalStrategyMethod());
 
@@ -60,9 +66,18 @@ app.use(bodyParser.json())   //解析json数据
 
 
 app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }));
+app.use(session({
+  secret: 'Random',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false,maxAge:5000000 },
+  rolling:true,
+  store:new MongoStore({
+    url: 'mongodb://127.0.0.1:27017/session',
+    touchAfter: 24 * 3600
+  })
+}));
 
-app.use( passportConfig.isAuthenticated );
-app.use( ()=>{console.log(123);} );
 
 // 潦草的跨域解决方案， cors设置白名单限制；
 app.all('*', function(req, res, next) {
@@ -73,17 +88,18 @@ app.all('*', function(req, res, next) {
   res.header("Content-Type", "application/json;charset=utf-8");
   next();
 });
+
 app.use(passport.initialize());
-// app.use(passport.session());
+app.use(passport.session());
 
-
-app.get('/',Fn_Home.Home);
-
+app.get('/login',Fn_Login.loginGet);
+app.post('/login.do',Fn_Login.login);
+app.use( passportConfig.isAuthenticated );
+app.get('/',Fn_Home.Index);
+app.get('/home.do',Fn_Home.Home);
 app.get('/add',Fn_Add.Add);
 app.get('/find',Fn_Add.findAll);
 app.get('/findOne',Fn_Add.findOne);
-app.get('/login',Fn_Login.loginGet);
-app.post('/login.do',Fn_Login.login);
 app.get('/save',Fn_Login.save);
 
 
@@ -121,7 +137,7 @@ var dbConfig = config;
 // console.log( dbConfig );
 //
 // console.log( process.env.NODE_ENV );
-// Dotenv.config({ path: ".env.example" });
+
 //
 //
 // console.log( process.env["MONGODB_URI"] );

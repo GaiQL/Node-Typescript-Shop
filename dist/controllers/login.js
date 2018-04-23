@@ -35,13 +35,15 @@ exports.login = (req, res, next) => {
             if (err) {
                 return next(err);
             }
+            process.env["ACCOUNT"] = req.body.account;
             res.send({ status: 200, message: info.message });
             res.end();
         });
     })(req, res, next);
 };
 exports.loginGet = (req, res, next) => {
-    res.render('../public/login.html');
+    res.type('html');
+    res.render('login');
 };
 exports.save = (req, res, next) => {
     let newData = new user_1.default({

@@ -48,5 +48,8 @@ export let isAuthenticated = ( req:Request,res:Response,next:NextFunction ) => {
   if( req.isAuthenticated() ){
     return next();
   }
-  res.send('<script>alert("123")</script>');
+  // res.type('html');
+  // res.send('<script>location.href="http://localhost:2000/login"</script>');
+  // res.end();
+  res.redirect('/login');
 }

@@ -1,19 +1,29 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
 Object.defineProperty(exports, "__esModule", { value: true });
-const sth_1 = require("../models/sth");
-exports.Home = (req, res) => {
-    let newHome = new sth_1.SthModel({
-        age: '123'
+const user_1 = __importDefault(require("../models/user"));
+// import ejs from 'ejs';
+exports.account = '';
+exports.Index = (req, res) => {
+    res.type('html');
+    res.render('trunk');
+};
+exports.Home = (req, res, next) => {
+    const account = process.env["ACCOUNT"];
+    user_1.default.findOne({ account }, { _id: 0, password: 0 }, (err, data) => {
+        if (err) {
+            return next(err);
+        }
+        ;
+        console.log(data);
+        res.send({
+            status: 200,
+            data,
+            message: '获取成功！'
+        });
+        res.end();
     });
-    newHome.save((err) => {
-        if (err)
-            return console.log(err);
-        console.log('添加成功');
-        // newHome.find(( err:Error,data: )=>{
-        //
-        // })
-    });
-    res.send('come on!');
-    res.end();
 };
 //# sourceMappingURL=index.js.map

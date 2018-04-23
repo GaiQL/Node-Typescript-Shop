@@ -5,7 +5,6 @@ import { body,validationResult,check  } from 'express-validator/check';
 import passport from 'passport';
 import { IVerifyOptions } from 'passport-local';
 
-
 export let loginVerification = [
   body('account','最少四位字符').isLength({ min: 4 }),
   body('password','密码为4-20个数字字符').isLength({ min: 4, max:20 }).matches(/^\d+$/)
@@ -34,6 +33,7 @@ export let login = ( req:Request,res:Response,next:NextFunction ) => {
     }
     req.logIn(user, (err) => {
       if (err) { return next(err); }
+      process.env["ACCOUNT"] = req.body.account;
       res.send({ status:200,message:info.message })
       res.end();
     });
@@ -42,7 +42,9 @@ export let login = ( req:Request,res:Response,next:NextFunction ) => {
 }
 
 export let loginGet = (req:Request,res:Response,next:NextFunction) => {
-  res.render( '../public/login.html' );
+
+  res.type('html');
+  res.render('login');
 }
 
 export let save = ( req:Request,res:Response,next:NextFunction ) => {
