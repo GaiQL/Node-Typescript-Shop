@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_1 = __importDefault(require("../models/user"));
+const counter_1 = require("../models/counter");
 const check_1 = require("express-validator/check");
 const passport_1 = __importDefault(require("passport"));
 exports.loginVerification = [
@@ -46,9 +47,11 @@ exports.loginGet = (req, res, next) => {
     res.render('login');
 };
 exports.save = (req, res, next) => {
+    console.log(counter_1.getNextUserSequenceValue("userKey", next));
     let newData = new user_1.default({
         account: 'xiaoming',
-        password: '123456'
+        password: '123456',
+        key: counter_1.getNextUserSequenceValue("userKey", next),
     });
     newData.save((err) => {
         if (err)

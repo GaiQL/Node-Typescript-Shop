@@ -10,7 +10,8 @@ const bcrypt_nodejs_1 = __importDefault(require("bcrypt-nodejs"));
 var userSchema = new mongoose_1.default.Schema({
     // email: { type: String, unique: true },
     account: String,
-    password: String
+    password: String,
+    key: Number
 }, { timestamps: true });
 userSchema.pre('save', function (next) {
     const user = this;
@@ -33,11 +34,11 @@ userSchema.pre('save', function (next) {
     });
 });
 let ComparePassword = function (candidatePassword, callback) {
-    console.log(candidatePassword, this.password);
     bcrypt_nodejs_1.default.compare(candidatePassword, this.password, (err, isMatch) => {
         callback(err, isMatch);
     });
 };
+// 返回的数据对象的方法；
 userSchema.methods.comparePassword = ComparePassword;
 var model = mongoose_1.default.model('user', userSchema);
 exports.default = model;

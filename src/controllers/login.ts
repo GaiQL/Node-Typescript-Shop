@@ -1,9 +1,11 @@
 import model from '../models/user';
+import { getNextUserSequenceValue } from '../models/counter';
 import { Request,Response,NextFunction } from 'express';
 import { UserModelIF } from "../models/User";
 import { body,validationResult,check  } from 'express-validator/check';
 import passport from 'passport';
 import { IVerifyOptions } from 'passport-local';
+
 
 export let loginVerification = [
   body('account','最少四位字符').isLength({ min: 4 }),
@@ -45,13 +47,16 @@ export let loginGet = (req:Request,res:Response,next:NextFunction) => {
 
   res.type('html');
   res.render('login');
+
 }
 
 export let save = ( req:Request,res:Response,next:NextFunction ) => {
 
+  console.log(getNextUserSequenceValue("userKey",next));
   let newData = new model({
       account:'xiaoming',
-      password:'123456'
+      password:'123456',
+      key:getNextUserSequenceValue("userKey",next),
   })
 
   newData.save(( err:Error )=>{
