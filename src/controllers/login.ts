@@ -1,5 +1,5 @@
 import model from '../models/user';
-import { getNextUserSequenceValue } from '../models/counter';
+import { getNextUserSequenceValue,userKeyIF } from '../models/counter';
 import { Request,Response,NextFunction } from 'express';
 import { UserModelIF } from "../models/User";
 import { body,validationResult,check  } from 'express-validator/check';
@@ -34,6 +34,7 @@ export let login = ( req:Request,res:Response,next:NextFunction ) => {
       return;
     }
     req.logIn(user, (err) => {
+      console.log(123);
       if (err) { return next(err); }
       process.env["ACCOUNT"] = req.body.account;
       res.send({ status:200,message:info.message })
@@ -52,17 +53,28 @@ export let loginGet = (req:Request,res:Response,next:NextFunction) => {
 
 export let save = ( req:Request,res:Response,next:NextFunction ) => {
 
-  console.log(getNextUserSequenceValue("userKey",next));
-  let newData = new model({
-      account:'xiaoming',
-      password:'123456',
-      key:getNextUserSequenceValue("userKey",next),
-  })
+  // 5ad9a85917dbc324205b6481 LastKey_users
+  getNextUserSequenceValue( "5ad9a85917dbc324205b6481",next )
+  .then(( data:userKeyIF )=>{
 
-  newData.save(( err:Error )=>{
-    if(err) return next(err);
-    console.log('添加成功');
+    let newData = new model({
+        account:'xiaoming',
+        password:'123456',
+        key:data.userLastKey,  //递增字段
+
+        checkStatusValue: "已审核",   //审核状态
+        checkStatus: 1,              //审核状态码
+        hospitalLogo: "http://image-product-web.oss-cn-beijing.aliyuncs.com/ym_hospital/shhm_yyZc_yylogo_0.jpg",  //用户头像
+        accountTypeValue: "医美机构", //用户类型
+        hospitalName: "上海华美医疗美容医院",//用户名称
+        accountType: 2,              //用户类型状态码
+    })
+    return newData.save();
+
+  })
+  .then(()=>{
     res.end();
   })
+  .catch(( err:Error )=>{ return next(err) });
 
 }

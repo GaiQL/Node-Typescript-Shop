@@ -2,7 +2,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt-nodejs";
 
-//    Mongoose 中的 Schema 和 Model  ;
+//    Mongoose 中的 Schema 和 Model  ; 查找时返回的 data 的接口，属性和方法；
 export interface UserModelIF extends mongoose.Document{
   account: string,
   password: string,
@@ -13,11 +13,19 @@ export interface UserModelIF extends mongoose.Document{
 
 // unique: true  唯一 value;
 // 拿到数据后会用定义的类型去存储，但是有些不能转换，boolean
+// ---------只有在 Schema 中定义过的字段才可以被存储。
 var userSchema = new mongoose.Schema({
     // email: { type: String, unique: true },
     account: String,
     password: String,
-    key: Number
+    key: Number,
+    checkStatusValue: String,
+    accountTypeValue: String,
+    accountType: Number,
+    checkStatus: Number,
+    hospitalLogo: String,
+    hospitalName: String
+
 }, { timestamps: true })
 
 userSchema.pre('save',function( next:any ){

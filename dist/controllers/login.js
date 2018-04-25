@@ -33,6 +33,7 @@ exports.login = (req, res, next) => {
             return;
         }
         req.logIn(user, (err) => {
+            console.log(123);
             if (err) {
                 return next(err);
             }
@@ -47,17 +48,25 @@ exports.loginGet = (req, res, next) => {
     res.render('login');
 };
 exports.save = (req, res, next) => {
-    console.log(counter_1.getNextUserSequenceValue("userKey", next));
-    let newData = new user_1.default({
-        account: 'xiaoming',
-        password: '123456',
-        key: counter_1.getNextUserSequenceValue("userKey", next),
-    });
-    newData.save((err) => {
-        if (err)
-            return next(err);
-        console.log('添加成功');
+    // 5ad9a85917dbc324205b6481 LastKey_users
+    counter_1.getNextUserSequenceValue("5ad9a85917dbc324205b6481", next)
+        .then((data) => {
+        let newData = new user_1.default({
+            account: 'xiaoming',
+            password: '123456',
+            key: data.userLastKey,
+            checkStatusValue: "已审核",
+            checkStatus: 1,
+            hospitalLogo: "http://image-product-web.oss-cn-beijing.aliyuncs.com/ym_hospital/shhm_yyZc_yylogo_0.jpg",
+            accountTypeValue: "医美机构",
+            hospitalName: "上海华美医疗美容医院",
+            accountType: 2,
+        });
+        return newData.save();
+    })
+        .then(() => {
         res.end();
-    });
+    })
+        .catch((err) => { return next(err); });
 };
 //# sourceMappingURL=login.js.map

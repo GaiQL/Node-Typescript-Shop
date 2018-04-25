@@ -69,24 +69,25 @@ app.use(express_session_1.default({
 }));
 // 潦草的跨域解决方案， cors设置白名单限制；
 app.all('*', function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", 'http://localhost:9098');
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
     res.header("X-Powered-By", ' 3.2.1');
     res.header("Content-Type", "application/json;charset=utf-8");
+    res.setHeader('Access-Control-Allow-Credentials', 'true'); //设置为true，可以跨域带上cookie申请端
     next();
 });
 app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
+app.get('/save', Fn_Login.save);
 app.get('/login', Fn_Login.loginGet);
 app.post('/login.do', Fn_Login.login);
 app.use(passportConfig.isAuthenticated);
 app.get('/', Fn_Home.Index);
-app.get('/home.do', Fn_Home.Home);
+app.get('/homepage.do', Fn_Home.Home);
 app.get('/add', Fn_Add.Add);
 app.get('/find', Fn_Add.findAll);
 app.get('/findOne', Fn_Add.findOne);
-app.get('/save', Fn_Login.save);
 // 错误处理
 function logErrors(err, req, res, next) {
     console.error(err.stack);
