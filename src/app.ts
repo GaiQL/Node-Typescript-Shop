@@ -99,11 +99,16 @@ app.get('/save',Fn_Login.save);
 app.get('/login',Fn_Login.loginGet);
 app.post('/login.do',Fn_Login.login);
 app.use( passportConfig.isAuthenticated );
+
 app.get('/',Fn_Home.Index);
 app.get('/homepage.do',Fn_Home.Home);
 app.get('/add',Fn_Add.Add);
 app.get('/find',Fn_Add.findAll);
 app.get('/findOne',Fn_Add.findOne);
+
+app.use( '/order',require('./router/order') );
+
+
 
 
 // 错误处理
@@ -153,3 +158,5 @@ var dbConfig = config;
 //   var detail = config.get('optionalFeature.detail');
 //   //...
 // }'
+
+export default app;

@@ -17,7 +17,6 @@ exports.Home = (req, res, next) => {
             return next(err);
         }
         ;
-        console.log(data);
         res.send({
             status: 200,
             data,
