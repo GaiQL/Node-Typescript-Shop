@@ -1,6 +1,7 @@
 import { verification_NIF,model_verification_N } from '../models/order/verification_N';
 import { Request,Response,NextFunction } from 'express';
 import { body,validationResult } from 'express-validator/check';
+import moment from 'moment';
 
 // 本想着给req.body，天真了...
 // interface omH_ListBody{
@@ -14,25 +15,26 @@ import { body,validationResult } from 'express-validator/check';
 //   heihei: string;
 // }
 // .matches  正则验证
-//  is 判断  to 使成为；
+//  is 判断然后返回结果  to 使成为；
 // .custom   验证函数；
 // .customSanitizer  666666
 // 有了这两个函数，这天下岂不是就属于我的了！！！！！！！66666666
 
-// .optional() checkFalsy:true 如果当前值为"", 0, false, null,undefined,当前链上的所有不产生效果
+// .optional() checkFalsy:true 如果当前值为"", 0, false, null,undefined,当前链上的所有不产生效果   is通不通过都会执行to
 export let Verification_omH_List = [
 
-  body('verificationState','数字').optional({ checkFalsy:true }).isLength({ min:0,max:5 }).matches(/^\d+$/).customSanitizer(( value,{req,location,path} )=>{
-    return 123123
+  body('currentPage','页数，必填数字').isLength({ min:1,max:5 }).isNumeric().toInt(),
+
+  body('verificationState','数字').optional({ checkFalsy:true }).isLength({ min:0,max:1 }).isNumeric().toInt(),
+  body('settlementState','数字').optional({ checkFalsy:true }).isLength({ min:0,max:1 }).isNumeric().toInt(),
+  body('orderCode','订单编号，数字').optional({ checkFalsy:true }).isLength({ min:0,max:30 }).isNumeric(),
+  body('verificationCode','核销券号').optional({ checkFalsy:true }).isLength({ min:0,max:5 }),
+  body('startTime','时间对象').optional({ checkFalsy:true }).isLength({ min:0,max:5 }).custom((value)=>{
+    console.log( value );
+    let time = new Date( value );
+    return moment( time );
   }),
-  body('settlementState','数字').optional({ checkFalsy:true }).isLength({ min:0,max:5 }).toInt(),
-  body('arr','数组').isArray().isLength({ min:0,max:5 }).custom(( value,{ req,location,path } )=>{
-    // console.log( location ); //body
-    // console.log( path ); //arr
-    console.log( value )
-    return true;
-   }),
-  // body('currentPage','最少四位字符').toNumbr()
+  body('endTime','时间对象').optional({ checkFalsy:true }).isLength({ min:0,max:5 })
 
 ]
 
@@ -41,11 +43,14 @@ export let Verification_omH_List = [
 export let omH_List = ( req:Request,res:Response,next:NextFunction ) => {
   console.log( req.body );
   const errors = validationResult( req );
+  let time = new Date();
+  console.log(moment());
   if (!errors.isEmpty()) {
     res.send({
       status:422,
       data:'您输入的信息有误',
-      message:errors.mapped()
+      message:errors.mapped(),
+      time:moment('1000-01-01')
     })
     res.end();
     return;

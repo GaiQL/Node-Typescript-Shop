@@ -1,7 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+}
 Object.defineProperty(exports, "__esModule", { value: true });
 const verification_N_1 = require("../models/order/verification_N");
 const check_1 = require("express-validator/check");
+const moment_1 = __importDefault(require("moment"));
 // 本想着给req.body，天真了...
 // interface omH_ListBody{
 //   verificationState: string;
@@ -14,32 +18,36 @@ const check_1 = require("express-validator/check");
 //   heihei: string;
 // }
 // .matches  正则验证
-//  is 判断  to 使成为；
+//  is 判断然后返回结果  to 使成为；
 // .custom   验证函数；
 // .customSanitizer  666666
 // 有了这两个函数，这天下岂不是就属于我的了！！！！！！！66666666
-// .optional() checkFalsy:true 如果当前值为"", 0, false, null,undefined,当前链上的所有不产生效果
+// .optional() checkFalsy:true 如果当前值为"", 0, false, null,undefined,当前链上的所有不产生效果   is通不通过都会执行to
 exports.Verification_omH_List = [
-    check_1.body('verificationState', '数字').optional({ checkFalsy: true }).isLength({ min: 0, max: 5 }).matches(/^\d+$/).customSanitizer((value, { req, location, path }) => {
-        return 123123;
-    }),
-    check_1.body('settlementState', '数字').optional({ checkFalsy: true }).isLength({ min: 0, max: 5 }).toInt(),
-    check_1.body('arr', '数组').isArray().isLength({ min: 0, max: 5 }).custom((value, { req, location, path }) => {
-        // console.log( location ); //body
-        // console.log( path ); //arr
+    check_1.body('currentPage', '页数，必填数字').isLength({ min: 1, max: 5 }).isNumeric().toInt(),
+    check_1.body('verificationState', '数字').optional({ checkFalsy: true }).isLength({ min: 0, max: 1 }).isNumeric().toInt(),
+    check_1.body('settlementState', '数字').optional({ checkFalsy: true }).isLength({ min: 0, max: 1 }).isNumeric().toInt(),
+    check_1.body('orderCode', '订单编号，数字').optional({ checkFalsy: true }).isLength({ min: 0, max: 30 }).isNumeric(),
+    check_1.body('verificationCode', '核销券号').optional({ checkFalsy: true }).isLength({ min: 0, max: 5 }),
+    check_1.body('startTime', '时间对象').optional({ checkFalsy: true }).isLength({ min: 0, max: 5 }).custom((value) => {
         console.log(value);
-        return true;
+        let time = new Date(value);
+        return moment_1.default(time);
     }),
+    check_1.body('endTime', '时间对象').optional({ checkFalsy: true }).isLength({ min: 0, max: 5 })
 ];
 //从req.body中取出来的所有都是字符串？？   啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！  要静，要安静，要宁静，要心经，要克制，世界如此美好，如此美好，美好，好，好尼玛
 exports.omH_List = (req, res, next) => {
     console.log(req.body);
     const errors = check_1.validationResult(req);
+    let time = new Date();
+    console.log(moment_1.default());
     if (!errors.isEmpty()) {
         res.send({
             status: 422,
             data: '您输入的信息有误',
-            message: errors.mapped()
+            message: errors.mapped(),
+            time: moment_1.default('1000-01-01')
         });
         res.end();
         return;
