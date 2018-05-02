@@ -1,6 +1,26 @@
 import model from '../models/user';
 import { Request,Response,NextFunction } from 'express';
 import { UserModelIF } from "../models/User";
+import { verification_YIF,model_verification_Y } from "../models/order/verification_Y";
+
+
+
+export let time_add = ( req:Request,res:Response ) => {
+  let time = new Date();
+  let newData = new model_verification_Y({
+    time
+  })
+  newData.save(( err:Error )=>{
+    if (err) return console.log( err );
+    console.log( '保存成功' );
+    res.send('ok');
+    res.end();
+  })
+}
+
+
+
+
 
 
 export let Add = ( req:Request,res:Response ) => {

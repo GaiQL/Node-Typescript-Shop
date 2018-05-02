@@ -4,6 +4,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_1 = __importDefault(require("../models/user"));
+const verification_Y_1 = require("../models/order/verification_Y");
+exports.time_add = (req, res) => {
+    let time = new Date();
+    let newData = new verification_Y_1.model_verification_Y({
+        time
+    });
+    newData.save((err) => {
+        if (err)
+            return console.log(err);
+        console.log('保存成功');
+        res.send('ok');
+        res.end();
+    });
+};
 exports.Add = (req, res) => {
     let newData = new user_1.default({
         username: '嘿嘿',

@@ -29,12 +29,12 @@ export let Verification_omH_List = [
   body('settlementState','数字').optional({ checkFalsy:true }).isLength({ min:0,max:1 }).isNumeric().toInt(),
   body('orderCode','订单编号，数字').optional({ checkFalsy:true }).isLength({ min:0,max:30 }).isNumeric(),
   body('verificationCode','核销券号').optional({ checkFalsy:true }).isLength({ min:0,max:5 }),
-  body('startTime','时间对象').optional({ checkFalsy:true }).isLength({ min:0,max:5 }).custom((value)=>{
-    console.log( value );
-    let time = new Date( value );
-    return moment( time );
-  }),
-  body('endTime','时间对象').optional({ checkFalsy:true }).isLength({ min:0,max:5 })
+  // body('startTime','时间对象').optional({ checkFalsy:true }).isLength({ min:0,max:5 }).custom((value)=>{
+  //   console.log( value );
+  //   let time = new Date( value );
+  //   return moment( time );
+  // }),
+  // body('endTime','时间对象').optional({ checkFalsy:true }).isLength({ min:0,max:5 })
 
 ]
 
@@ -44,13 +44,13 @@ export let omH_List = ( req:Request,res:Response,next:NextFunction ) => {
   console.log( req.body );
   const errors = validationResult( req );
   let time = new Date();
-  console.log(moment());
+  console.log(time);
   if (!errors.isEmpty()) {
     res.send({
       status:422,
       data:'您输入的信息有误',
       message:errors.mapped(),
-      time:moment('1000-01-01')
+      time:new Date()
     })
     res.end();
     return;
@@ -80,14 +80,19 @@ export let omH_List = ( req:Request,res:Response,next:NextFunction ) => {
     .limit( pageSize )
     .exec()
     .then(( data:verification_NIF[] )=>{
-      res.send({
-        status:200,
-        data:{
-          resultData:data,
-          resultDataSize:count,
-          pageSize:pageSize
-        },
-        message:'获取成功'
+      data[0].verificationTime = req.body.startTime;
+      data[0].refundTime = new Date();
+      data[0].save(( err:Error )=>{
+        if(err) return console.log(err);
+        res.send({
+          status:200,
+          data:{
+            resultData:data,
+            resultDataSize:count,
+            pageSize:pageSize
+          },
+          message:'获取成功'
+        })
       })
     })
     .catch(( err:Error )=>{

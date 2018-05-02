@@ -4,8 +4,11 @@ import { Verification_omH_List } from '../controllers/order_Manage';
 
 import { Request,Response,NextFunction } from 'express';
 import * as Fn_order from '../controllers/order_Manage';
+import * as time from '../controllers/add'
 
 router.post('/orderManagement.do',Verification_omH_List,Fn_order.omH_List);
-// router.get('/save.do',Fn_order.omH_ListSabe);
+router.get('/save.do',time.time_add);
+// router.get('/save.do',Fn_order.omH_List  Sabe);
 
 module.exports = router;
+  

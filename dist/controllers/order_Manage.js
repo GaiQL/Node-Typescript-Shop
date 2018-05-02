@@ -1,11 +1,7 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-}
 Object.defineProperty(exports, "__esModule", { value: true });
 const verification_N_1 = require("../models/order/verification_N");
 const check_1 = require("express-validator/check");
-const moment_1 = __importDefault(require("moment"));
 // 本想着给req.body，天真了...
 // interface omH_ListBody{
 //   verificationState: string;
@@ -29,25 +25,19 @@ exports.Verification_omH_List = [
     check_1.body('settlementState', '数字').optional({ checkFalsy: true }).isLength({ min: 0, max: 1 }).isNumeric().toInt(),
     check_1.body('orderCode', '订单编号，数字').optional({ checkFalsy: true }).isLength({ min: 0, max: 30 }).isNumeric(),
     check_1.body('verificationCode', '核销券号').optional({ checkFalsy: true }).isLength({ min: 0, max: 5 }),
-    check_1.body('startTime', '时间对象').optional({ checkFalsy: true }).isLength({ min: 0, max: 5 }).custom((value) => {
-        console.log(value);
-        let time = new Date(value);
-        return moment_1.default(time);
-    }),
-    check_1.body('endTime', '时间对象').optional({ checkFalsy: true }).isLength({ min: 0, max: 5 })
 ];
 //从req.body中取出来的所有都是字符串？？   啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！  要静，要安静，要宁静，要心经，要克制，世界如此美好，如此美好，美好，好，好尼玛
 exports.omH_List = (req, res, next) => {
     console.log(req.body);
     const errors = check_1.validationResult(req);
     let time = new Date();
-    console.log(moment_1.default());
+    console.log(time);
     if (!errors.isEmpty()) {
         res.send({
             status: 422,
             data: '您输入的信息有误',
             message: errors.mapped(),
-            time: moment_1.default('1000-01-01')
+            time: new Date()
         });
         res.end();
         return;
@@ -76,14 +66,20 @@ exports.omH_List = (req, res, next) => {
             .limit(pageSize)
             .exec()
             .then((data) => {
-            res.send({
-                status: 200,
-                data: {
-                    resultData: data,
-                    resultDataSize: count,
-                    pageSize: pageSize
-                },
-                message: '获取成功'
+            data[0].verificationTime = req.body.startTime;
+            data[0].refundTime = new Date();
+            data[0].save((err) => {
+                if (err)
+                    return console.log(err);
+                res.send({
+                    status: 200,
+                    data: {
+                        resultData: data,
+                        resultDataSize: count,
+                        pageSize: pageSize
+                    },
+                    message: '获取成功'
+                });
             });
         })
             .catch((err) => {
