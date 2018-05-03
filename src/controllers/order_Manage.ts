@@ -2,6 +2,7 @@ import { verification_NIF,model_verification_N } from '../models/order/verificat
 import { Request,Response,NextFunction } from 'express';
 import { body,validationResult } from 'express-validator/check';
 import moment from 'moment';
+import { verification_YIF,model_verification_Y } from "../models/order/verification_Y";
 
 // 本想着给req.body，天真了...
 // interface omH_ListBody{
@@ -29,11 +30,15 @@ export let Verification_omH_List = [
   body('settlementState','数字').optional({ checkFalsy:true }).isLength({ min:0,max:1 }).isNumeric().toInt(),
   body('orderCode','订单编号，数字').optional({ checkFalsy:true }).isLength({ min:0,max:30 }).isNumeric(),
   body('verificationCode','核销券号').optional({ checkFalsy:true }).isLength({ min:0,max:5 }),
-  // body('startTime','时间对象').optional({ checkFalsy:true }).isLength({ min:0,max:5 }).custom((value)=>{
-  //   console.log( value );
-  //   let time = new Date( value );
-  //   return moment( time );
-  // }),
+  body('startTime','时间对象').optional({ checkFalsy:true }).isLength({ min:7,max:100 }).custom((value)=>{
+    // 前台js传过来的时间对象，现在应该是一个字符串；  Thu May 03 2018 10:44:12 GMT+0800 (中国标准时间)
+    console.log( value );
+    // let time = new Date( value );    //node中new Date(字符串)可变为同等的格林尼治时间；应该可以直接将这个字符串进行存储，Mongoose Date进行转换；
+    // let time = moment( new Date(value) );  //moment中不能直接进行转换，要new Date下.....  他报错，不是报错，抛处一个警告，value值不符合标准，moment好像隐式转换成了js date对象。
+    let timeT = new Date('1980 1 1');  //  1970-01-01T00:00:00.123Z
+    // console.log( value instanceof Date );
+    // console.log( timeT )
+  }),
   // body('endTime','时间对象').optional({ checkFalsy:true }).isLength({ min:0,max:5 })
 
 ]
@@ -41,18 +46,24 @@ export let Verification_omH_List = [
     //从req.body中取出来的所有都是字符串？？   啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！  要静，要安静，要宁静，要心经，要克制，世界如此美好，如此美好，美好，好，好尼玛
 
 export let omH_List = ( req:Request,res:Response,next:NextFunction ) => {
-  console.log( req.body );
   const errors = validationResult( req );
-  let time = new Date();
-  console.log(time);
   if (!errors.isEmpty()) {
-    res.send({
-      status:422,
-      data:'您输入的信息有误',
-      message:errors.mapped(),
-      time:new Date()
-    })
+    // res.send({
+    //   status:422,
+    //   data:'您输入的信息有误',
+    //   message:errors.mapped(),
+    //   time:moment().format('YYYY-MM-DD HH-mm-ss')   //  使用Moment对象转换为各种格式，方便又灵活，漂酿！！
+    // })
+    // res.end();
+    model_verification_Y.find(( err,data:verification_YIF[] )=>{
+    // 从mogoose中取出来的时间可以直接传给前端，为格林尼治时间；string.
+    //  new Date() 与 moment() 传递到前面都   为格林尼治时间；string.
+
+    res.send( {
+      data:moment(data[0].time).format('YYYY-MM-DD HH-mm-ss')
+    } );
     res.end();
+  })
     return;
   }
   // settlementState,verificationState 决定了使用哪个Model，

@@ -105,6 +105,7 @@ app.get('/homepage.do',Fn_Home.Home);
 app.get('/add',Fn_Add.Add);
 app.get('/find',Fn_Add.findAll);
 app.get('/findOne',Fn_Add.findOne);
+app.get('/findTime',Fn_Add.findTime);
 
 app.use( '/order',require('./router/order') );
 

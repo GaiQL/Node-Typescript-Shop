@@ -5,10 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_1 = __importDefault(require("../models/user"));
 const verification_Y_1 = require("../models/order/verification_Y");
+const moment_1 = __importDefault(require("moment"));
 exports.time_add = (req, res) => {
-    let time = new Date();
+    let time = new Date().toLocaleString();
+    let mo_time = moment_1.default();
     let newData = new verification_Y_1.model_verification_Y({
-        time
+        time: mo_time
     });
     newData.save((err) => {
         if (err)
@@ -35,12 +37,18 @@ exports.Add = (req, res) => {
         res.end();
     });
 };
+//时间  从Mongo中直接取出的也是格林尼治时间( GMT )   标志Z。UTC 协调世界时间。  北京时间与格林尼治时间或UTC时间相差8个时区
+// new Date 后还是格林尼治时间....,
+// .toLocaleString() 格林尼治时间转本地时间。
+// 在Mongo中就储存为格林尼治时间，试下时间日期的查询是否方便，接下来就是前台与后台的时间通信.
 exports.findAll = (req, res, next) => {
-    user_1.default.find((err, data) => {
+    verification_Y_1.model_verification_Y.find((err, data) => {
         // err = new Error('something is broken');
         if (err)
             return next(err);
-        console.log(req);
+        console.log(data);
+        console.log(data[1].time.toLocaleString());
+        console.log(new Date().getTimezoneOffset()); // -480  分钟为单位，格林尼治时间比当前时间少八个小时。
         // res.status(500);  //  浏览器产生的状态码;
         let expressionData = {
             status: 200,
@@ -48,6 +56,24 @@ exports.findAll = (req, res, next) => {
             message: '哈哈哈'
         };
         res.send(expressionData);
+        res.end();
+    });
+};
+// "$gt" 、"$gte"、 "$lt"、 "$lte"(分别对应">"、 ">=" 、"<" 、"<=")；
+// "$ne"  来进行  "不相等"
+// new Date( 2018,5,3 )  //  2018-06-02T16:00:00.000Z   参数月份比实际月份小1
+// new Date( '2018/5/3' )  //  2018-05-02T16:00:00.000Z
+// moment( new Date() ) 就可以变成Moment对象了...
+// new Date( moment() ) ts中不接受一个对象，但是js中可以转换；
+// 在mongoose中定义类型就定义为 Date 了，所以可能咋存都是mongo默认的格林尼治时间了...
+exports.findTime = (req, res, next) => {
+    let time = new Date().toLocaleString(); //本地时间字符串，( 2018-5-3 09:51:57 )
+    let mo_time = new Date();
+    console.log(mo_time);
+    verification_Y_1.model_verification_Y.find({ time: { $gte: new Date('2018/5/3') } }, (err, data) => {
+        if (err)
+            return console.log(err);
+        // console.log( data );
         res.end();
     });
 };
