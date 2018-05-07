@@ -11,9 +11,8 @@ var express = require('express');
 var router = express.Router();
 const order_Manage_1 = require("../controllers/order_Manage");
 const Fn_order = __importStar(require("../controllers/order_Manage"));
-const time = __importStar(require("../controllers/add"));
 router.post('/orderManagement.do', order_Manage_1.Verification_omH_List, Fn_order.omH_List);
-router.get('/save.do', time.time_add);
-// router.get('/save.do',Fn_order.omH_List  Sabe);
+// router.get('/save.do',time.time_add);
+router.get('/save.do', Fn_order.omH_ListSabe);
 module.exports = router;
 //# sourceMappingURL=order.js.map

@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
+import { NextFunction } from 'express';
+import moment from 'moment';
 
 export interface verification_NIF extends mongoose.Document{
+
+  createTime: Date,
   orderCode: string,
   paymentType: number,
   payAtShop: number,
@@ -15,6 +19,7 @@ export interface verification_NIF extends mongoose.Document{
   prepayment: number,
   realPayment: number,
   key: number
+
 }
 /*
 
@@ -28,14 +33,21 @@ export interface verification_NIF extends mongoose.Document{
       下单时间
 
 */
+
+let stringTime = ( what:any ) => {
+  console.log( what );
+  return new Date( what )
+}
+
 let verification_N = new mongoose.Schema({
 
+  createTime: { type:Date,get:stringTime },
   orderCode:String,
   paymentType:Number,
   payAtShop:Number,
   onlinePrice:Number,
   nameUsp:String,
-  verificationTime:Date,
+  verificationTime:{ type:Date,default:Date.now() },
   refundTime:Date,
   productType:Number,
   fixedPrice:Number,
@@ -45,7 +57,19 @@ let verification_N = new mongoose.Schema({
   realPayment:Number,
   key:Number
 
+}, {
+  timestamps: true ,
+  // validateBeforeSave: false,
+  // strict:false
 });
+
+// type type_stringTime = ( ) => void;
+// let stringTime:type_stringTime = ( ) => {
+//   this.forEach(( e:verification_NIF,i:number )=>{
+//     e.createTime = moment( e.createTime ).format('YYYY-MM-DD HH:mm:ss');
+//   })
+// }
+// verification_N.methods.stringTime = stringTime;
 
 export let model_verification_N = mongoose.model('verification_N',verification_N);
 

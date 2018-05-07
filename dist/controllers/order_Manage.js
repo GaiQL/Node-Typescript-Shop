@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const verification_N_1 = require("../models/order/verification_N");
 const check_1 = require("express-validator/check");
 const moment_1 = __importDefault(require("moment"));
-const verification_Y_1 = require("../models/order/verification_Y");
 // 本想着给req.body，天真了...
 // interface omH_ListBody{
 //   verificationState: string;
@@ -38,34 +37,48 @@ exports.Verification_omH_List = [
         let timeT = new Date('1980 1 1'); //  1970-01-01T00:00:00.123Z
         // console.log( value instanceof Date );
         // console.log( timeT )
+        return true;
     }),
+    check_1.body('endTime', '时间对象').optional({ checkFalsy: true }).isLength({ min: 7, max: 100 })
 ];
 //从req.body中取出来的所有都是字符串？？   啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！  要静，要安静，要宁静，要心经，要克制，世界如此美好，如此美好，美好，好，好尼玛
 exports.omH_List = (req, res, next) => {
     const errors = check_1.validationResult(req);
     if (!errors.isEmpty()) {
-        // res.send({
-        //   status:422,
-        //   data:'您输入的信息有误',
-        //   message:errors.mapped(),
-        //   time:moment().format('YYYY-MM-DD HH-mm-ss')   //  使用Moment对象转换为各种格式，方便又灵活，漂酿！！
-        // })
-        // res.end();
-        verification_Y_1.model_verification_Y.find((err, data) => {
-            // 从mogoose中取出来的时间可以直接传给前端，为格林尼治时间；string.
-            //  new Date() 与 moment() 传递到前面都   为格林尼治时间；string.
-            res.send({
-                data: moment_1.default(data[0].time).format('YYYY-MM-DD HH-mm-ss')
-            });
-            res.end();
+        res.send({
+            status: 422,
+            data: '您输入的信息有误',
+            message: errors.mapped()
+            // time:moment().format('YYYY-MM-DD HH-mm-ss')   //  使用Moment对象转换为各种格式，方便又灵活，漂酿！！
         });
-        return;
+        res.end();
+        //   model_verification_Y.find(( err,data:verification_YIF[] )=>{
+        //   // 从mogoose中取出来的时间可以直接传给前端，为格林尼治时间；string.
+        //   //  new Date() 与 moment() 传递到前面都   为格林尼治时间；string.
+        //   res.send( {
+        //     data:moment(data[0].time).format('YYYY-MM-DD HH-mm-ss')
+        //   } );
+        //   res.end();
+        // })
+        //   return;
     }
     // settlementState,verificationState 决定了使用哪个Model，
     // currentPage 当前页，
     // orderCode 订单编号，verificationCode核销券号
     // startTime，endTime
+    // console.log( req.body );
     let medel_Promise;
+    //   model_verification_Y.find(( err,data:verification_YIF[] )=>{
+    //   // 从mogoose中取出来的时间可以直接传给前端，为格林尼治时间；string.
+    //   //  new Date() 与 moment() 传递到前面都   为格林尼治时间；string.
+    //   data[0].time = moment(data[0].time).format('YYYY-MM-DD HH-mm-ss')
+    //   console.log( data[0] );
+    //   res.send( {
+    //     data
+    //   } );
+    //   res.end();
+    // }).lean()
+    //   return;
     // if( verificationState == 0 ){
     //   medel_Promise =
     // }else if(  verificationState == 1 ){
@@ -80,25 +93,24 @@ exports.omH_List = (req, res, next) => {
     verification_N_1.model_verification_N.count({}, (err, count) => {
         if (err)
             return next(err);
-        let promise = verification_N_1.model_verification_N.find()
+        // .lean()  查询出来的是一个js对象，不再是mongoose.document,没有save等方法，使用后可以对返回的date随意操作。
+        let promise = verification_N_1.model_verification_N.find().lean()
             .skip(page * 5)
             .limit(pageSize)
             .exec()
             .then((data) => {
-            data[0].verificationTime = req.body.startTime;
-            data[0].refundTime = new Date();
-            data[0].save((err) => {
-                if (err)
-                    return console.log(err);
-                res.send({
-                    status: 200,
-                    data: {
-                        resultData: data,
-                        resultDataSize: count,
-                        pageSize: pageSize
-                    },
-                    message: '获取成功'
-                });
+            let time = moment_1.default(data[0].createTime).format('YYYY-MM-DD HH:mm:ss');
+            data[0].createTime = time;
+            console.log(data);
+            console.log(data[0].createTime);
+            res.send({
+                status: 200,
+                data: {
+                    resultData: data,
+                    resultDataSize: count,
+                    pageSize: pageSize
+                },
+                message: '获取成功'
             });
         })
             .catch((err) => {
@@ -108,13 +120,12 @@ exports.omH_List = (req, res, next) => {
 };
 exports.omH_ListSabe = (req, res, next) => {
     let newDate = new verification_N_1.model_verification_N({
-        "createTime": "2017-07-11 23:55:26",
+        "createTime": new Date(),
         "orderCode": "15224001798350210228",
         "paymentType": 1,
         "payAtShop": 12.4,
         "onlinePrice": 20,
         "nameUsp": "超微小气泡 超人气清洁神器 首次体验价！",
-        "verificationTime": null,
         "refundTime": null,
         "productType": 1,
         "fixedPrice": 0,

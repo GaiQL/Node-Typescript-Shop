@@ -38,8 +38,9 @@ export let Verification_omH_List = [
     let timeT = new Date('1980 1 1');  //  1970-01-01T00:00:00.123Z
     // console.log( value instanceof Date );
     // console.log( timeT )
+    return true;
   }),
-  // body('endTime','时间对象').optional({ checkFalsy:true }).isLength({ min:0,max:5 })
+  body('endTime','时间对象').optional({ checkFalsy:true }).isLength({ min:7,max:100 })
 
 ]
 
@@ -48,29 +49,41 @@ export let Verification_omH_List = [
 export let omH_List = ( req:Request,res:Response,next:NextFunction ) => {
   const errors = validationResult( req );
   if (!errors.isEmpty()) {
-    // res.send({
-    //   status:422,
-    //   data:'您输入的信息有误',
-    //   message:errors.mapped(),
-    //   time:moment().format('YYYY-MM-DD HH-mm-ss')   //  使用Moment对象转换为各种格式，方便又灵活，漂酿！！
-    // })
-    // res.end();
-    model_verification_Y.find(( err,data:verification_YIF[] )=>{
-    // 从mogoose中取出来的时间可以直接传给前端，为格林尼治时间；string.
-    //  new Date() 与 moment() 传递到前面都   为格林尼治时间；string.
-
-    res.send( {
-      data:moment(data[0].time).format('YYYY-MM-DD HH-mm-ss')
-    } );
+    res.send({
+      status:422,
+      data:'您输入的信息有误',
+      message:errors.mapped()
+      // time:moment().format('YYYY-MM-DD HH-mm-ss')   //  使用Moment对象转换为各种格式，方便又灵活，漂酿！！
+    })
     res.end();
-  })
-    return;
+  //   model_verification_Y.find(( err,data:verification_YIF[] )=>{
+  //   // 从mogoose中取出来的时间可以直接传给前端，为格林尼治时间；string.
+  //   //  new Date() 与 moment() 传递到前面都   为格林尼治时间；string.
+  //   res.send( {
+  //     data:moment(data[0].time).format('YYYY-MM-DD HH-mm-ss')
+  //   } );
+  //   res.end();
+  // })
+  //   return;
   }
   // settlementState,verificationState 决定了使用哪个Model，
   // currentPage 当前页，
   // orderCode 订单编号，verificationCode核销券号
   // startTime，endTime
+  // console.log( req.body );
   let medel_Promise:any;
+
+  //   model_verification_Y.find(( err,data:verification_YIF[] )=>{
+  //   // 从mogoose中取出来的时间可以直接传给前端，为格林尼治时间；string.
+  //   //  new Date() 与 moment() 传递到前面都   为格林尼治时间；string.
+  //   data[0].time = moment(data[0].time).format('YYYY-MM-DD HH-mm-ss')
+  //   console.log( data[0] );
+  //   res.send( {
+  //     data
+  //   } );
+  //   res.end();
+  // }).lean()
+  //   return;
 
   // if( verificationState == 0 ){
   //   medel_Promise =
@@ -86,24 +99,25 @@ export let omH_List = ( req:Request,res:Response,next:NextFunction ) => {
   model_verification_N.count({},(err:Error,count:number)=>{
 
     if( err ) return next(err);
-    let promise = model_verification_N.find()
+    // .lean()  查询出来的是一个js对象，不再是mongoose.document,没有save等方法，使用后可以对返回的date随意操作。
+    let promise = model_verification_N.find().lean()
     .skip(page * 5)
     .limit( pageSize )
     .exec()
-    .then(( data:verification_NIF[] )=>{
-      data[0].verificationTime = req.body.startTime;
-      data[0].refundTime = new Date();
-      data[0].save(( err:Error )=>{
-        if(err) return console.log(err);
-        res.send({
-          status:200,
-          data:{
-            resultData:data,
-            resultDataSize:count,
-            pageSize:pageSize
-          },
-          message:'获取成功'
-        })
+    .then(( data:any )=>{
+      let time = moment(data[0].createTime).format('YYYY-MM-DD HH:mm:ss');
+      data[0].createTime = time;
+      
+      console.log( data );
+      console.log( data[0].createTime );
+      res.send({
+        status:200,
+        data:{
+          resultData:data,
+          resultDataSize:count,
+          pageSize:pageSize
+        },
+        message:'获取成功'
       })
     })
     .catch(( err:Error )=>{
@@ -118,13 +132,12 @@ export let omH_List = ( req:Request,res:Response,next:NextFunction ) => {
 export let omH_ListSabe = ( req:Request,res:Response,next:NextFunction ) => {
 
   let newDate = new model_verification_N({
-    "createTime": "2017-07-11 23:55:26",
+    "createTime": new Date(),
     "orderCode": "15224001798350210228",
     "paymentType": 1,
     "payAtShop": 12.4,
     "onlinePrice": 20,
     "nameUsp": "超微小气泡 超人气清洁神器 首次体验价！",
-    "verificationTime": null,
     "refundTime": null,
     "productType": 1,
     "fixedPrice": 0,

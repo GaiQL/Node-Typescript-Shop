@@ -1,0 +1,5 @@
+1、前台AJAX传递moment对象时报错：
+Uncaught TypeError: Cannot read property '_calendar' of undefined.
+
+
+与孤独和睦的人不再惧怕任何事。 ​​​​

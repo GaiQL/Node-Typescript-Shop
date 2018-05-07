@@ -22,6 +22,7 @@ var userSchema = new mongoose_1.default.Schema({
 }, { timestamps: true });
 userSchema.pre('save', function (next) {
     const user = this;
+    console.log(user);
     //   ???????????  握草，就想不明白为什么this.account会报错！！！！！！  他说this类型是 mongoose.Document?????  // console.log( this.account )
     //  this的类型不应该是 UserModelIF 么；
     console.log(user.account);

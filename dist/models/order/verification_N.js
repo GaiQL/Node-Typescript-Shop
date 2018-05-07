@@ -16,13 +16,18 @@ const mongoose_1 = __importDefault(require("mongoose"));
       下单时间
 
 */
+let stringTime = (what) => {
+    console.log(what);
+    return new Date(what);
+};
 let verification_N = new mongoose_1.default.Schema({
+    createTime: { type: Date, get: stringTime },
     orderCode: String,
     paymentType: Number,
     payAtShop: Number,
     onlinePrice: Number,
     nameUsp: String,
-    verificationTime: Date,
+    verificationTime: { type: Date, default: Date.now() },
     refundTime: Date,
     productType: Number,
     fixedPrice: Number,
@@ -31,7 +36,16 @@ let verification_N = new mongoose_1.default.Schema({
     prepayment: Number,
     realPayment: Number,
     key: Number
+}, {
+    timestamps: true,
 });
+// type type_stringTime = ( ) => void;
+// let stringTime:type_stringTime = ( ) => {
+//   this.forEach(( e:verification_NIF,i:number )=>{
+//     e.createTime = moment( e.createTime ).format('YYYY-MM-DD HH:mm:ss');
+//   })
+// }
+// verification_N.methods.stringTime = stringTime;
 exports.model_verification_N = mongoose_1.default.model('verification_N', verification_N);
 // {
 //   "data": {
