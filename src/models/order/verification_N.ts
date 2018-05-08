@@ -3,23 +3,22 @@ import { NextFunction } from 'express';
 import moment from 'moment';
 
 export interface verification_NIF extends mongoose.Document{
-
-  createTime: Date,
-  orderCode: string,
-  paymentType: number,
-  payAtShop: number,
-  onlinePrice: number,
-  nameUsp: string,
-  verificationTime: Date,
-  refundTime: Date,
-  productType: number,
-  fixedPrice: number,
-  verificationCode: string,
-  userName: string,
-  prepayment: number,
-  realPayment: number,
-  key: number
-
+  createTime: Date;
+  orderCode: string;
+  paymentType: number;
+  payAtShop: number;
+  onlinePrice: number;
+  nameUsp: string;
+  verificationTime: Date;
+  refundTime: Date;
+  productType: number;
+  fixedPrice: number;
+  verificationCode: string;
+  userName: string;
+  prepayment: number;
+  realPayment: number;
+  readonly key: number ;
+  [ index:string ] : any;
 }
 /*
 
@@ -35,7 +34,7 @@ export interface verification_NIF extends mongoose.Document{
 */
 
 let stringTime = ( what:any ) => {
-  console.log( what );
+  // console.log( what );
   return new Date( what )
 }
 
@@ -47,7 +46,8 @@ let verification_N = new mongoose.Schema({
   payAtShop:Number,
   onlinePrice:Number,
   nameUsp:String,
-  verificationTime:{ type:Date,default:Date.now() },
+  // verificationTime:{ type:Date,default:Date.now() },
+  verificationTime:{ type:Date },
   refundTime:Date,
   productType:Number,
   fixedPrice:Number,

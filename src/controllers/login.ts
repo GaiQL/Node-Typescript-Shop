@@ -54,7 +54,7 @@ export let loginGet = (req:Request,res:Response,next:NextFunction) => {
 export let save = ( req:Request,res:Response,next:NextFunction ) => {
 
   // 5ad9a85917dbc324205b6481 LastKey_users
-  getNextUserSequenceValue( "5ad9a85917dbc324205b6481",next )
+  getNextUserSequenceValue( "key_user",next )
   .then(( data:userKeyIF )=>{
 
     let newData = new model({

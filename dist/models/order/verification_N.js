@@ -17,7 +17,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 
 */
 let stringTime = (what) => {
-    console.log(what);
+    // console.log( what );
     return new Date(what);
 };
 let verification_N = new mongoose_1.default.Schema({
@@ -27,7 +27,8 @@ let verification_N = new mongoose_1.default.Schema({
     payAtShop: Number,
     onlinePrice: Number,
     nameUsp: String,
-    verificationTime: { type: Date, default: Date.now() },
+    // verificationTime:{ type:Date,default:Date.now() },
+    verificationTime: { type: Date },
     refundTime: Date,
     productType: Number,
     fixedPrice: Number,

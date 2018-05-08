@@ -1,11 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-}
 Object.defineProperty(exports, "__esModule", { value: true });
 const verification_N_1 = require("../models/order/verification_N");
 const check_1 = require("express-validator/check");
-const moment_1 = __importDefault(require("moment"));
+const stringTime_1 = require("../congfig/stringTime");
 // 本想着给req.body，天真了...
 // interface omH_ListBody{
 //   verificationState: string;
@@ -31,7 +28,7 @@ exports.Verification_omH_List = [
     check_1.body('verificationCode', '核销券号').optional({ checkFalsy: true }).isLength({ min: 0, max: 5 }),
     check_1.body('startTime', '时间对象').optional({ checkFalsy: true }).isLength({ min: 7, max: 100 }).custom((value) => {
         // 前台js传过来的时间对象，现在应该是一个字符串；  Thu May 03 2018 10:44:12 GMT+0800 (中国标准时间)
-        console.log(value);
+        // console.log( value );
         // let time = new Date( value );    //node中new Date(字符串)可变为同等的格林尼治时间；应该可以直接将这个字符串进行存储，Mongoose Date进行转换；
         // let time = moment( new Date(value) );  //moment中不能直接进行转换，要new Date下.....  他报错，不是报错，抛处一个警告，value值不符合标准，moment好像隐式转换成了js date对象。
         let timeT = new Date('1980 1 1'); //  1970-01-01T00:00:00.123Z
@@ -99,10 +96,8 @@ exports.omH_List = (req, res, next) => {
             .limit(pageSize)
             .exec()
             .then((data) => {
-            let time = moment_1.default(data[0].createTime).format('YYYY-MM-DD HH:mm:ss');
-            data[0].createTime = time;
+            stringTime_1.stringTime(data, ['createTime', 'verificationTime']);
             console.log(data);
-            console.log(data[0].createTime);
             res.send({
                 status: 200,
                 data: {
@@ -119,6 +114,7 @@ exports.omH_List = (req, res, next) => {
     });
 };
 exports.omH_ListSabe = (req, res, next) => {
+    // 第一次在表中生成数据的时候，不给verificationTime，默认为undefined,当核销的时候添加verificationTime字段
     let newDate = new verification_N_1.model_verification_N({
         "createTime": new Date(),
         "orderCode": "15224001798350210228",
@@ -126,7 +122,8 @@ exports.omH_ListSabe = (req, res, next) => {
         "payAtShop": 12.4,
         "onlinePrice": 20,
         "nameUsp": "超微小气泡 超人气清洁神器 首次体验价！",
-        "refundTime": null,
+        "verificationTime": undefined,
+        "refundTime": new Date(),
         "productType": 1,
         "fixedPrice": 0,
         "verificationCode": "6R7AA13UFRTU",

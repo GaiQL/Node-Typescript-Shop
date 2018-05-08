@@ -9,13 +9,13 @@ export interface userKeyIF extends mongoose.Document{
 
 var userKey = new mongoose.Schema({
   userLastKey:Number,
-  type:String
+  type:{ type: String, unique: true }
 })
 
 var userKeyMD = mongoose.model('counter', userKey);
 
 //userkey自增
-export let getNextUserSequenceValue = ( id:string,next:NextFunction,callback?:( key:number )=>void ) => {
+export let getNextUserSequenceValue = ( type:string,next:NextFunction,callback?:( key:number )=>void ) => {
 
   //在这里放弃了promise,需要做一个返回值，但是promise貌似做不到...
   /*
@@ -24,7 +24,7 @@ export let getNextUserSequenceValue = ( id:string,next:NextFunction,callback?:( 
   */
 
   // 5ad9a85917dbc324205b6481  userlastKey
-  let primise = userKeyMD.findById(id).exec();
+  let primise = userKeyMD.findOne({ type }).exec();
   primise
   .then(( data:userKeyIF )=>{
     let lastId:number = ++ data.userLastKey;

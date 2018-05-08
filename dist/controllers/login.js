@@ -49,7 +49,7 @@ exports.loginGet = (req, res, next) => {
 };
 exports.save = (req, res, next) => {
     // 5ad9a85917dbc324205b6481 LastKey_users
-    counter_1.getNextUserSequenceValue("5ad9a85917dbc324205b6481", next)
+    counter_1.getNextUserSequenceValue("key_user", next)
         .then((data) => {
         let newData = new user_1.default({
             account: 'xiaoming',

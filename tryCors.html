@@ -3,32 +3,51 @@
   <head>
     <meta charset="utf-8">
     <title></title>
+    <style media="screen">
+      div{
+        height:500px;
+        border:1px solid #000;
+      }
+    </style>
   </head>
   <body>
+    <div>123123</div>
+    <div>123123</div>
+    <div>123123</div>
+    <div>123123</div>
+    <div>123123</div>
+    <div>123123</div>
+    <div>123123</div>
+    <div id="heiheihei">123123</div>
+    <div>123123</div>
+    <div>123123</div>
+    <div>123123</div>
     <script type="text/javascript">
-    var obj = new XMLHttpRequest();
-    obj.open("GET", 'http://localhost:2000/find',true);//window.baseUrl + 'product/detail.do?product_id=1'
-    obj.send(null);
-    // obj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    obj.onreadystatechange = () => {
-    		if( obj.readyState == 4 ) {
-    				let data = JSON.parse(obj.response);
-    				console.log(data);
-    		}
-    }
+    location.href=" file:///C:/Users/Administrator/Desktop/i%20love%20study/Node-Typescript-Shop/tryCors.html#heiheihei "
+    // var obj = new XMLHttpRequest();
+    // obj.open("GET", 'http://localhost:2000/find',true);//window.baseUrl + 'product/detail.do?product_id=1'
+    // obj.send(null);
+    // // obj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    // obj.onreadystatechange = () => {
+    // 		if( obj.readyState == 4 ) {
+    // 				let data = JSON.parse(obj.response);
+    // 				console.log(data);
+    // 		}
+    // }
 
     // var zz = RegExp('123456',/^\d+$/);
-    console.log( /\d/.test('zzz1') );    //只要有一位是数字就  true；
-    console.log( /^\d+$/.test('1123213') );    // 都是数字为   true;
-
-    let time = new Date();
-    console.log(time);
-
-    var obj = {
-      time
-    }
-
-    console.log( obj );
+    // console.log( /\d/.test('zzz1') );    //只要有一位是数字就  true；
+    // console.log( /^\d+$/.test('1123213') );    // 都是数字为   true;
+    //
+    // let time = new Date();
+    // console.log(time);
+    //
+    // var obj = {
+    //   time
+    // }
+    //
+    // console.log( obj );
+    window.scrollTo( 0,500 )
     </script>
   </body>
 </html>

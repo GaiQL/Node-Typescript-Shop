@@ -3,6 +3,7 @@ import { Request,Response,NextFunction } from 'express';
 import { body,validationResult } from 'express-validator/check';
 import moment from 'moment';
 import { verification_YIF,model_verification_Y } from "../models/order/verification_Y";
+import { stringTime } from '../congfig/stringTime';
 
 // 本想着给req.body，天真了...
 // interface omH_ListBody{
@@ -32,7 +33,7 @@ export let Verification_omH_List = [
   body('verificationCode','核销券号').optional({ checkFalsy:true }).isLength({ min:0,max:5 }),
   body('startTime','时间对象').optional({ checkFalsy:true }).isLength({ min:7,max:100 }).custom((value)=>{
     // 前台js传过来的时间对象，现在应该是一个字符串；  Thu May 03 2018 10:44:12 GMT+0800 (中国标准时间)
-    console.log( value );
+    // console.log( value );
     // let time = new Date( value );    //node中new Date(字符串)可变为同等的格林尼治时间；应该可以直接将这个字符串进行存储，Mongoose Date进行转换；
     // let time = moment( new Date(value) );  //moment中不能直接进行转换，要new Date下.....  他报错，不是报错，抛处一个警告，value值不符合标准，moment好像隐式转换成了js date对象。
     let timeT = new Date('1980 1 1');  //  1970-01-01T00:00:00.123Z
@@ -105,11 +106,11 @@ export let omH_List = ( req:Request,res:Response,next:NextFunction ) => {
     .limit( pageSize )
     .exec()
     .then(( data:any )=>{
-      let time = moment(data[0].createTime).format('YYYY-MM-DD HH:mm:ss');
-      data[0].createTime = time;
-      
+
+      stringTime( data,['createTime','verificationTime'] );
+
       console.log( data );
-      console.log( data[0].createTime );
+
       res.send({
         status:200,
         data:{
@@ -131,6 +132,7 @@ export let omH_List = ( req:Request,res:Response,next:NextFunction ) => {
 
 export let omH_ListSabe = ( req:Request,res:Response,next:NextFunction ) => {
 
+  // 第一次在表中生成数据的时候，不给verificationTime，默认为undefined,当核销的时候添加verificationTime字段
   let newDate = new model_verification_N({
     "createTime": new Date(),
     "orderCode": "15224001798350210228",
@@ -138,7 +140,8 @@ export let omH_ListSabe = ( req:Request,res:Response,next:NextFunction ) => {
     "payAtShop": 12.4,
     "onlinePrice": 20,
     "nameUsp": "超微小气泡 超人气清洁神器 首次体验价！",
-    "refundTime": null,
+    "verificationTime":undefined,
+    "refundTime":  new Date(),
     "productType": 1,
     "fixedPrice": 0,
     "verificationCode": "6R7AA13UFRTU",
