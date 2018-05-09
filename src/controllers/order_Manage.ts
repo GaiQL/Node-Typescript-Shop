@@ -4,6 +4,7 @@ import { body,validationResult } from 'express-validator/check';
 import moment from 'moment';
 import { verification_YIF,model_verification_Y } from "../models/order/verification_Y";
 import { stringTime } from '../congfig/stringTime';
+import { getNextUserSequenceValue,userKeyIF } from '../models/counter';
 
 // 本想着给req.body，天真了...
 // interface omH_ListBody{
@@ -27,7 +28,9 @@ export let Verification_omH_List = [
 
   body('currentPage','页数，必填数字').isLength({ min:1,max:5 }).isNumeric().toInt(),
 
-  body('verificationState','数字').optional({ checkFalsy:true }).isLength({ min:0,max:1 }).isNumeric().toInt(),
+  body('verificationState','数字').optional({ checkFalsy:true }).isLength({ min:0,max:1 }).isNumeric().toInt().customSanitizer((value)=>{
+    return value?value:0
+  }),
   body('settlementState','数字').optional({ checkFalsy:true }).isLength({ min:0,max:1 }).isNumeric().toInt(),
   body('orderCode','订单编号，数字').optional({ checkFalsy:true }).isLength({ min:0,max:30 }).isNumeric(),
   body('verificationCode','核销券号').optional({ checkFalsy:true }).isLength({ min:0,max:5 }),
@@ -38,7 +41,7 @@ export let Verification_omH_List = [
     // let time = moment( new Date(value) );  //moment中不能直接进行转换，要new Date下.....  他报错，不是报错，抛处一个警告，value值不符合标准，moment好像隐式转换成了js date对象。
     let timeT = new Date('1980 1 1');  //  1970-01-01T00:00:00.123Z
     // console.log( value instanceof Date );
-    // console.log( timeT )
+    // console.log( timeT ) 
     return true;
   }),
   body('endTime','时间对象').optional({ checkFalsy:true }).isLength({ min:7,max:100 })
@@ -86,22 +89,30 @@ export let omH_List = ( req:Request,res:Response,next:NextFunction ) => {
   // }).lean()
   //   return;
 
-  // if( verificationState == 0 ){
-  //   medel_Promise =
-  // }else if(  verificationState == 1 ){
-  //
-  // }else if(  verificationState == 4 ){
-  //
-  // }else if(  settlementState == 1 ){
+  let { verificationState } = req.body;
+  let condition:any
+  // 未核销
+  if( verificationState == 0 ){
+    condition = { verificationTime:undefined,refundTime:undefined }
+  }
+  // 已核销
+  else if(  verificationState == 1 ){
+    condition = { verificationTime:{$ne:undefined} }
+  }
+  // 已退款
+  else if(  verificationState == 4 ){
+    condition = { refundTime:{$ne:undefined} }
+  }
+  // else if(  settlementState == 1 ){
   //
   // }
   let page = 0;
   let pageSize = 5;
-  model_verification_N.count({},(err:Error,count:number)=>{
+  model_verification_N.count( condition ,(err:Error,count:number)=>{
 
     if( err ) return next(err);
     // .lean()  查询出来的是一个js对象，不再是mongoose.document,没有save等方法，使用后可以对返回的date随意操作。
-    let promise = model_verification_N.find().lean()
+    let promise = model_verification_N.find( condition ).lean()
     .skip(page * 5)
     .limit( pageSize )
     .exec()
@@ -133,28 +144,38 @@ export let omH_List = ( req:Request,res:Response,next:NextFunction ) => {
 export let omH_ListSabe = ( req:Request,res:Response,next:NextFunction ) => {
 
   // 第一次在表中生成数据的时候，不给verificationTime，默认为undefined,当核销的时候添加verificationTime字段
-  let newDate = new model_verification_N({
-    "createTime": new Date(),
-    "orderCode": "15224001798350210228",
-    "paymentType": 1,
-    "payAtShop": 12.4,
-    "onlinePrice": 20,
-    "nameUsp": "超微小气泡 超人气清洁神器 首次体验价！",
-    "verificationTime":undefined,
-    "refundTime":  new Date(),
-    "productType": 1,
-    "fixedPrice": 0,
-    "verificationCode": "6R7AA13UFRTU",
-    "userName": "18504345533",
-    "prepayment": 7.6,
-    "realPayment": 7.6,
-    "key": 85
-  });
+  // 核销成功添加 verificationTime 字段。
+  // 退款成功添加 refundTime 字段 以及退款原因。
+  getNextUserSequenceValue( 'key_verification',next )
+  .then(( data:userKeyIF )=>{
 
-  newDate.save(( err:Error )=>{
-    if( err ) return next( err );
-    res.send('成功喽');
-    res.end();
+    let newDate = new model_verification_N({
+      "createTime": new Date(),
+      "orderCode": "15224001798350210228",
+      "paymentType": 1,
+      "payAtShop": 12.4,
+      "onlinePrice": 20,
+      "nameUsp": "超微小气泡 超人气清洁神器 首次体验价！",
+      "verificationTime": new Date(),
+      "refundTime":  undefined,
+      "productType": 1,
+      "fixedPrice": 0,
+      "verificationCode": "6R7AA13UFRTU",
+      "userName": "18504345533",
+      "prepayment": 7.6,
+      "realPayment": 7.6,
+      "key": data.last_key
+    });
+
+    newDate.save(( err:Error )=>{
+      if( err ) return next( err );
+      res.send('成功喽');
+      res.end();
+    })
+
+  })
+  .catch((err:Error)=>{
+    return next( err );
   })
 
 }

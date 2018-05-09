@@ -4,18 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
-/*
-
-      订单编号
-      核销券号
-      项目名称
-      用户信息
-      项目金额
-      预约金金额
-      到店支付金额
-      下单时间
-
-*/
 let stringTime = (what) => {
     // console.log( what );
     return new Date(what);

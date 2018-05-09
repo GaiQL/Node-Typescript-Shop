@@ -60,7 +60,7 @@ export let save = ( req:Request,res:Response,next:NextFunction ) => {
     let newData = new model({
         account:'xiaoming',
         password:'123456',
-        key:data.userLastKey,  //递增字段
+        key:data.last_key,  //递增字段
 
         checkStatusValue: "已审核",   //审核状态
         checkStatus: 1,              //审核状态码

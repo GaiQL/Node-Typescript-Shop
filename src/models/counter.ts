@@ -3,12 +3,12 @@ import mongoose from "mongoose";
 import { NextFunction } from 'express';
 
 export interface userKeyIF extends mongoose.Document{
-  userLastKey:number,
+  last_key:number,
   type:string
 }
 
 var userKey = new mongoose.Schema({
-  userLastKey:Number,
+  last_key:Number,
   type:{ type: String, unique: true }
 })
 
@@ -27,8 +27,8 @@ export let getNextUserSequenceValue = ( type:string,next:NextFunction,callback?:
   let primise = userKeyMD.findOne({ type }).exec();
   primise
   .then(( data:userKeyIF )=>{
-    let lastId:number = ++ data.userLastKey;
-    data.userLastKey = lastId;
+    let lastId:number = ++ data.last_key;
+    data.last_key = lastId;
     return data.save();
    })
   .catch(( err:Error )=>{ if(err) return next(err) });

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const verification_N_1 = require("../models/order/verification_N");
 const check_1 = require("express-validator/check");
 const stringTime_1 = require("../congfig/stringTime");
+const counter_1 = require("../models/counter");
 // 本想着给req.body，天真了...
 // interface omH_ListBody{
 //   verificationState: string;
@@ -22,7 +23,9 @@ const stringTime_1 = require("../congfig/stringTime");
 // .optional() checkFalsy:true 如果当前值为"", 0, false, null,undefined,当前链上的所有不产生效果   is通不通过都会执行to
 exports.Verification_omH_List = [
     check_1.body('currentPage', '页数，必填数字').isLength({ min: 1, max: 5 }).isNumeric().toInt(),
-    check_1.body('verificationState', '数字').optional({ checkFalsy: true }).isLength({ min: 0, max: 1 }).isNumeric().toInt(),
+    check_1.body('verificationState', '数字').optional({ checkFalsy: true }).isLength({ min: 0, max: 1 }).isNumeric().toInt().customSanitizer((value) => {
+        return value ? value : 0;
+    }),
     check_1.body('settlementState', '数字').optional({ checkFalsy: true }).isLength({ min: 0, max: 1 }).isNumeric().toInt(),
     check_1.body('orderCode', '订单编号，数字').optional({ checkFalsy: true }).isLength({ min: 0, max: 30 }).isNumeric(),
     check_1.body('verificationCode', '核销券号').optional({ checkFalsy: true }).isLength({ min: 0, max: 5 }),
@@ -33,7 +36,7 @@ exports.Verification_omH_List = [
         // let time = moment( new Date(value) );  //moment中不能直接进行转换，要new Date下.....  他报错，不是报错，抛处一个警告，value值不符合标准，moment好像隐式转换成了js date对象。
         let timeT = new Date('1980 1 1'); //  1970-01-01T00:00:00.123Z
         // console.log( value instanceof Date );
-        // console.log( timeT )
+        // console.log( timeT ) 
         return true;
     }),
     check_1.body('endTime', '时间对象').optional({ checkFalsy: true }).isLength({ min: 7, max: 100 })
@@ -76,22 +79,28 @@ exports.omH_List = (req, res, next) => {
     //   res.end();
     // }).lean()
     //   return;
-    // if( verificationState == 0 ){
-    //   medel_Promise =
-    // }else if(  verificationState == 1 ){
-    //
-    // }else if(  verificationState == 4 ){
-    //
-    // }else if(  settlementState == 1 ){
+    let { verificationState } = req.body;
+    let condition;
+    // 未核销
+    if (verificationState == 0) {
+        condition = { verificationTime: undefined, refundTime: undefined };
+    }
+    else if (verificationState == 1) {
+        condition = { verificationTime: { $ne: undefined } };
+    }
+    else if (verificationState == 4) {
+        condition = { refundTime: { $ne: undefined } };
+    }
+    // else if(  settlementState == 1 ){
     //
     // }
     let page = 0;
     let pageSize = 5;
-    verification_N_1.model_verification_N.count({}, (err, count) => {
+    verification_N_1.model_verification_N.count(condition, (err, count) => {
         if (err)
             return next(err);
         // .lean()  查询出来的是一个js对象，不再是mongoose.document,没有save等方法，使用后可以对返回的date随意操作。
-        let promise = verification_N_1.model_verification_N.find().lean()
+        let promise = verification_N_1.model_verification_N.find(condition).lean()
             .skip(page * 5)
             .limit(pageSize)
             .exec()
@@ -115,28 +124,36 @@ exports.omH_List = (req, res, next) => {
 };
 exports.omH_ListSabe = (req, res, next) => {
     // 第一次在表中生成数据的时候，不给verificationTime，默认为undefined,当核销的时候添加verificationTime字段
-    let newDate = new verification_N_1.model_verification_N({
-        "createTime": new Date(),
-        "orderCode": "15224001798350210228",
-        "paymentType": 1,
-        "payAtShop": 12.4,
-        "onlinePrice": 20,
-        "nameUsp": "超微小气泡 超人气清洁神器 首次体验价！",
-        "verificationTime": undefined,
-        "refundTime": new Date(),
-        "productType": 1,
-        "fixedPrice": 0,
-        "verificationCode": "6R7AA13UFRTU",
-        "userName": "18504345533",
-        "prepayment": 7.6,
-        "realPayment": 7.6,
-        "key": 85
-    });
-    newDate.save((err) => {
-        if (err)
-            return next(err);
-        res.send('成功喽');
-        res.end();
+    // 核销成功添加 verificationTime 字段。
+    // 退款成功添加 refundTime 字段 以及退款原因。
+    counter_1.getNextUserSequenceValue('key_verification', next)
+        .then((data) => {
+        let newDate = new verification_N_1.model_verification_N({
+            "createTime": new Date(),
+            "orderCode": "15224001798350210228",
+            "paymentType": 1,
+            "payAtShop": 12.4,
+            "onlinePrice": 20,
+            "nameUsp": "超微小气泡 超人气清洁神器 首次体验价！",
+            "verificationTime": new Date(),
+            "refundTime": undefined,
+            "productType": 1,
+            "fixedPrice": 0,
+            "verificationCode": "6R7AA13UFRTU",
+            "userName": "18504345533",
+            "prepayment": 7.6,
+            "realPayment": 7.6,
+            "key": data.last_key
+        });
+        newDate.save((err) => {
+            if (err)
+                return next(err);
+            res.send('成功喽');
+            res.end();
+        });
+    })
+        .catch((err) => {
+        return next(err);
     });
 };
 //# sourceMappingURL=order_Manage.js.map

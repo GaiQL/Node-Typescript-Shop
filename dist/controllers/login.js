@@ -54,7 +54,7 @@ exports.save = (req, res, next) => {
         let newData = new user_1.default({
             account: 'xiaoming',
             password: '123456',
-            key: data.userLastKey,
+            key: data.last_key,
             checkStatusValue: "已审核",
             checkStatus: 1,
             hospitalLogo: "http://image-product-web.oss-cn-beijing.aliyuncs.com/ym_hospital/shhm_yyZc_yylogo_0.jpg",

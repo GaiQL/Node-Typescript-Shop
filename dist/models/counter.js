@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 var userKey = new mongoose_1.default.Schema({
-    userLastKey: Number,
+    last_key: Number,
     type: { type: String, unique: true }
 });
 var userKeyMD = mongoose_1.default.model('counter', userKey);
@@ -20,8 +20,8 @@ exports.getNextUserSequenceValue = (type, next, callback) => {
     let primise = userKeyMD.findOne({ type }).exec();
     primise
         .then((data) => {
-        let lastId = ++data.userLastKey;
-        data.userLastKey = lastId;
+        let lastId = ++data.last_key;
+        data.last_key = lastId;
         return data.save();
     })
         .catch((err) => { if (err)
