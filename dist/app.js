@@ -56,6 +56,7 @@ passport_1.default.use(passportConfig.LocalStrategyMethod());
 app.use(body_parser_1.default.urlencoded({ extended: true })); //解析UTF-8的编码的数据。  会使用querystring库解析URL编码的数据
 app.use(body_parser_1.default.json()); //解析json数据
 app.use(express_1.default.static(path_1.default.join(__dirname, "public"), { maxAge: 31557600000 }));
+app.use(express_1.default.static('img'));
 app.use(express_session_1.default({
     secret: 'Random',
     resave: false,

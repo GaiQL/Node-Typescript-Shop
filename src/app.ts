@@ -52,7 +52,7 @@ app.use(compression());
 app.use(lusca.xframe("SAMEORIGIN"));
 app.use(lusca.xssProtection(true));
 
-app.engine('html', ejs.renderFile);
+app.engine('html', ejs.renderFile)  ;
 app.set('views',__dirname +'/public')
 app.set('view engine', 'html');
 
@@ -66,6 +66,8 @@ app.use(bodyParser.json())   //解析json数据
 
 
 app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }));
+app.use(express.static('img'));
+
 app.use(session({
   secret: 'Random',
   resave: false,
