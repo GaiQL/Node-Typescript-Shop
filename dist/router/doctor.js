@@ -16,7 +16,6 @@ const multer_1 = __importDefault(require("multer"));
 let storage = multer_1.default.diskStorage({
     destination: 'img/doctors',
     filename: function (req, file, cb) {
-        console.log(file);
         let postfix = '.' + file.mimetype.split('/')[1];
         cb(null, file.fieldname + '-' + Date.now() + postfix);
     }
@@ -45,9 +44,13 @@ const Fn_doctor = __importStar(require("../controllers/doctor"));
 // 医美擅长项目
 router.get('/saveGoodItem.do', Fn_goodItem.save);
 router.get('/firstTypeList.do', Fn_goodItem.find);
-// 医生
-router.post('/addDoctor.do', Fn_doctor.save);
+// save doctor
+router.post('/addDoctor.do', Fn_doctor.save_examine, Fn_doctor.save);
+// find doctor
+router.post('/ListDoctor.do', Fn_doctor.find);
 // image
 router.post('/uploadDoctorImg.do', upload.single('file'), Fn_doctor.save_Img);
+// delete image
+router.post('/deleteDoctorImg.do', Fn_doctor.delete_Img_examine, Fn_doctor.delete_Img);
 module.exports = router;
 //# sourceMappingURL=doctor.js.map

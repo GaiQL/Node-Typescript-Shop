@@ -32,7 +32,7 @@ import { default as model,UserModelIF } from './models/user';
 
 var app = express();
 
-app.listen(2000);
+let listener = app.listen(2000);
 
 Dotenv.config({ path: ".env.example" });
 
@@ -66,7 +66,7 @@ app.use(bodyParser.json())   //解析json数据
 
 
 app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }));
-app.use(express.static('img'));
+app.use('/img', express.static('img'));
 
 app.use(session({
   secret: 'Random',
@@ -156,7 +156,7 @@ var dbConfig = config;
 
 // console.log( );
 
-
+// console.log( listener.address() )
 
 // if (config.has('optionalFeature.detail')) {
 //   var detail = config.get('optionalFeature.detail');

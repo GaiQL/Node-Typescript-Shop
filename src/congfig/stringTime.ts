@@ -1,4 +1,5 @@
-import { verification_NIF } from '../models/order/verification_N';
+// import { verification_NIF } from '../models/order/verification_N';
+// import { doctorIf } from '../models/doctor/doctor'
 import moment from 'moment';
 
 function changeDate( date:Date,formatString?:string ){
@@ -21,7 +22,7 @@ function changeDate( date:Date,formatString?:string ){
 
 }
 
-export let stringTime = ( data:verification_NIF[],str:string|string[] ) => {
+export let stringTime = ( data:any[],str:string|string[] ) => {
     data.forEach(( e,i )=>{
       if( str instanceof Array ){
         for(let j=0;j<str.length;j++ ){

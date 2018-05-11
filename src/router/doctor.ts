@@ -6,9 +6,10 @@ import multer from 'multer';
 let storage = multer.diskStorage({
   destination: 'img/doctors' ,
   filename: function (req, file, cb) {
-    console.log( file )
+
     let postfix = '.' + file.mimetype.split('/')[1];
     cb( null, file.fieldname + '-' + Date.now() + postfix )
+
   }
 })
 
@@ -36,11 +37,15 @@ import * as Fn_goodItem from '../controllers/goodItem';
 import * as Fn_doctor from '../controllers/doctor';
 
 // 医美擅长项目
-router.get('/saveGoodItem.do',Fn_goodItem.save);
-router.get('/firstTypeList.do',Fn_goodItem.find);
-// 医生
-router.post('/addDoctor.do',Fn_doctor.save);
+router.get( '/saveGoodItem.do',Fn_goodItem.save );
+router.get( '/firstTypeList.do',Fn_goodItem.find );
+// save doctor
+router.post( '/addDoctor.do',Fn_doctor.save_examine,Fn_doctor.save );
+// find doctor
+router.post( '/ListDoctor.do',Fn_doctor.find );
 // image
-router.post( '/uploadDoctorImg.do',upload.single( 'file' ),Fn_doctor.save_Img )
+router.post( '/uploadDoctorImg.do',upload.single( 'file' ),Fn_doctor.save_Img );
+// delete image
+router.post( '/deleteDoctorImg.do',Fn_doctor.delete_Img_examine,Fn_doctor.delete_Img );
 
 module.exports = router;
