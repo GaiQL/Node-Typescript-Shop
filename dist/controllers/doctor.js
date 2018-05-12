@@ -7,6 +7,7 @@ const doctor_1 = require("../models/doctor/doctor");
 const check_1 = require("express-validator/check");
 const counter_1 = require("../models/counter");
 const stringTime_1 = require("../congfig/stringTime");
+const validationResult_1 = require("../congfig/validationResult");
 const fs_1 = __importDefault(require("fs"));
 exports.save_examine = [
     check_1.body('doctorName').isLength({ min: 1, max: 100 }),
@@ -41,13 +42,15 @@ exports.save = (req, res, next) => {
 exports.find_examine = [
     check_1.body('currentPage').isLength({ min: 1, max: 1000 }).isNumeric().customSanitizer((value) => { return value ? value : 1; }),
     check_1.body('type').isLength({ min: 1, max: 100 }).isNumeric().customSanitizer((value) => { return value ? value : 0; }),
-    check_1.body('doctorName').isLength({ min: 1, max: 100 }),
-    check_1.body('doctorKey').isLength({ min: 1, max: 100 })
+    check_1.body('doctorName').isLength({ min: 0, max: 100 }),
+    check_1.body('doctorKey').optional({ checkFalsy: true }).isLength({ min: 0, max: 100 }).isNumeric()
 ];
 exports.find = (req, res, next) => {
+    validationResult_1.validationResult_FN(req, res);
     //  全部  审核中  驳回  已置顶  上架中  已下架
-    let { type } = req.body;
+    let { type, doctorName, doctorKey } = req.body;
     let find_condition = {};
+    console.log(doctorName, doctorKey, type); //type默认是 0.....
     if (type == 1) {
         find_condition = { doctorCheckState: 0 };
     }
@@ -63,6 +66,12 @@ exports.find = (req, res, next) => {
     else if (type == 5) {
         find_condition = { doctorCheckState: 1, doctorUpshelf: 0 };
     }
+    if (doctorKey) {
+        find_condition.key = doctorKey;
+    }
+    if (doctorName) {
+        find_condition.doctorName = { $regex: '^' + doctorName, $options: 'm' };
+    }
     doctor_1.modle_doctor.count(find_condition, (err, count) => {
         let promise = doctor_1.modle_doctor.find(find_condition).lean().exec();
         promise.then((data) => {
@@ -72,11 +81,79 @@ exports.find = (req, res, next) => {
                 message: '获取医生列表成功！',
                 data: {
                     doctorSum: count,
-                    doctorList: data
+                    doctorList: data || []
                 }
             });
         })
             .catch((err) => { next(err); });
+    });
+};
+exports.editDoctorIsTop_examine = [
+    check_1.body('key').isNumeric().isLength({ min: 1, max: 10 }),
+    check_1.body('isTop').isNumeric().isLength({ min: 1, max: 1 })
+];
+exports.editDoctorIsTop = (req, res, next) => {
+    // key
+    // isTop
+    validationResult_1.validationResult_FN(req, res);
+    let promise = doctor_1.modle_doctor.findOne({ key: req.body.key }).exec();
+    promise.then((data) => {
+        console.log(data);
+        data.isTop = req.body.isTop;
+        if (data.isTop) {
+            data.topTime = new Date();
+        }
+        else {
+            data.topTime = undefined;
+        }
+        data.save((err) => {
+            if (err)
+                return next(err);
+            res.send({
+                status: 200,
+                message: data.isTop ? '置顶成功' : '取消置顶成功'
+            });
+        });
+    });
+};
+exports.findOne_examine = [
+    check_1.body('key').isNumeric().isLength({ min: 1, max: 10 })
+];
+exports.findOne = (req, res, next) => {
+    validationResult_1.validationResult_FN(req, res);
+    let promise = doctor_1.modle_doctor.findOne({ key: req.body.key }).exec();
+    promise.then((data) => {
+        let arr = [];
+        data.doctorGoodat.split(',').forEach((e, i) => {
+            arr.push({ typeId: e });
+        });
+        res.send({
+            status: 200,
+            message: '获取医生信息成功',
+            data: {
+                ymDoctor: data,
+                zizhiList: JSON.parse(data.doctorZizhiList),
+                typeList: arr
+            }
+        });
+    });
+};
+exports.editDoctor = (req, res, next) => {
+    let promise = doctor_1.modle_doctor.findOne({ key: req.body.key }).exec();
+    promise.then((data) => {
+        console.log(data);
+        for (let key in req.body) {
+            data[key] = req.body[key];
+        }
+        data.save((err) => {
+            if (err)
+                return next(err);
+            res.send({
+                status: 200,
+                message: '编辑医生成功'
+            });
+            res.end();
+        });
     });
 };
 exports.save_Img = (req, res, next) => {

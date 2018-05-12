@@ -42,8 +42,14 @@ router.get( '/firstTypeList.do',Fn_goodItem.find );
 // save doctor
 router.post( '/addDoctor.do',Fn_doctor.save_examine,Fn_doctor.save );
 // find doctor
-router.post( '/ListDoctor.do',Fn_doctor.find );
-// image
+router.post( '/ListDoctor.do',Fn_doctor.find_examine,Fn_doctor.find );
+// change doctor top status
+router.post( '/editDoctorIsTop.do',Fn_doctor.editDoctorIsTop_examine,Fn_doctor.editDoctorIsTop );
+// look a doctor details
+router.post( '/findByDoctorId.do',Fn_doctor.findOne_examine,Fn_doctor.findOne );
+// eidt doctor'
+router.post( '/editDoctor.do',Fn_doctor.save_examine,Fn_doctor.editDoctor );
+// save image
 router.post( '/uploadDoctorImg.do',upload.single( 'file' ),Fn_doctor.save_Img );
 // delete image
 router.post( '/deleteDoctorImg.do',Fn_doctor.delete_Img_examine,Fn_doctor.delete_Img );

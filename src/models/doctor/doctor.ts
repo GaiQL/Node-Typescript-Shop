@@ -16,12 +16,14 @@ export interface doctorIf extends mongoose.Document{
   doctorInfo: string;
   hospitalId: number;
   doctorPhoto: JSON;
-  doctorZizhiList: JSON;
+  doctorZizhiList: string;
   actionTime: Date;
   doctorUpshelf: number;
   topTime: Date;
   doctorCheckState: number;
   goodat: string[];
+  isTop:number;
+  [what:string]:any;
 }
 
 let doctorS = new mongoose.Schema({
@@ -44,7 +46,7 @@ let doctorS = new mongoose.Schema({
   actionTime: { type:Date,default:Date.now()　},
   doctorUpshelf: { type:Number,default:1 },
   isTop: { type:Number,default:0 },
-  topTime: Date,
+  topTime:  Date,
   doctorCheckState: { type:Number,default:0 },
   goodat: String
 
