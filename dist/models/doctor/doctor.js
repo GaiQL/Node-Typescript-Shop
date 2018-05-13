@@ -20,6 +20,7 @@ let doctorS = new mongoose_1.default.Schema({
     hospitalId: Number,
     doctorPhoto: JSON,
     doctorZizhiList: JSON,
+    rejectReason: String,
     actionTime: { type: Date, default: Date.now() },
     doctorUpshelf: { type: Number, default: 1 },
     isTop: { type: Number, default: 0 },

@@ -49,8 +49,12 @@ router.post( '/editDoctorIsTop.do',Fn_doctor.editDoctorIsTop_examine,Fn_doctor.e
 router.post( '/findByDoctorId.do',Fn_doctor.findOne_examine,Fn_doctor.findOne );
 // eidt doctor'
 router.post( '/editDoctor.do',Fn_doctor.save_examine,Fn_doctor.editDoctor );
+// delete doctor
+router.post( '/deleteDoctor.do',Fn_doctor.findOne_examine,Fn_doctor.deleteDoctor );
 // save image
 router.post( '/uploadDoctorImg.do',upload.single( 'file' ),Fn_doctor.save_Img );
+// reject reason
+router.post( '/rejectReason.do',Fn_doctor.findOne_examine,Fn_doctor.rejectReason );
 // delete image
 router.post( '/deleteDoctorImg.do',Fn_doctor.delete_Img_examine,Fn_doctor.delete_Img );
 

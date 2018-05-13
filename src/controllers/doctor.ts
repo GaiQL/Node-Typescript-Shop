@@ -17,7 +17,7 @@ export let save_examine = [
   body( 'doctorCountry' ).isLength({ min:1,max:100 }),
   body( 'doctorSex' ).isLength({ min:1,max:1 }).isNumeric().toInt(),
   body( 'doctorJob' ).isLength({ min:1,max:100 }),
-  body( 'doctorZizhi' ).isLength({ min:1,max:10 }),
+  body( 'doctorZizhi' ).isLength({ min:1,max:100 }),
   body( 'jobStartTime' ).isLength({ min:7,max:100 }),
   body( 'doctorEducation' ).isLength({ min:1,max:10 }),
   body( 'bdId' ).isLength({ min:1,max:10 }).isNumeric().toInt(),
@@ -83,7 +83,7 @@ export let find = ( req:Request,res:Response,next:NextFunction ) => {
   }else if( type == 3 ){
     find_condition = { doctorCheckState:1,doctorUpshelf:1,isTop:1 };
   }else if( type == 4 ){
-    find_condition = { doctorCheckState:1,doctorUpshelf:1,isTop:0 };
+    find_condition = { doctorCheckState:1,doctorUpshelf:1 };
   }else if( type == 5 ){
     find_condition = { doctorCheckState:1,doctorUpshelf:0 };
   }
@@ -138,6 +138,7 @@ export let editDoctorIsTop = ( req:Request,res:Response,next:NextFunction ) => {
         status:200,
         message:data.isTop?'置顶成功':'取消置顶成功'
       })
+      res.end()
     })
   })
 
@@ -174,6 +175,8 @@ export let findOne = ( req:Request,res:Response,next:NextFunction ) => {
 
 export let editDoctor = ( req:Request,res:Response,next:NextFunction ) => {
 
+  validationResult_FN( req,res );
+
   let promise = modle_doctor.findOne( { key:req.body.key } ).exec();
   promise.then(( data:doctorIf )=>{
     console.log( data );
@@ -188,6 +191,27 @@ export let editDoctor = ( req:Request,res:Response,next:NextFunction ) => {
       })
       res.end();
     })
+  })
+}
+
+export let rejectReason = ( req:Request,res:Response,next:NextFunction ) => {
+
+  validationResult_FN( req,res );
+  let promise = modle_doctor.findOne( { key:req.body.key },{ rejectReason:1 } ).exec();
+  promise.then(( data:doctorIf )=>{
+    res.send({ status:200,data:data.rejectReason });
+  })
+  .catch( ( err:Error )=>{ next( err ) } );
+
+}
+
+export let deleteDoctor = ( req:Request,res:Response,next:NextFunction ) => {
+
+  validationResult_FN( req,res );
+  modle_doctor.remove( { key:req.body.key } ,( err:Error )=>{
+    if( err ) next( err );
+    res.send({ status:200,message:'删除医生成功' });
+    res.end();
   })
 
 }
@@ -225,3 +249,34 @@ export let delete_Img = ( req:Request,res:Response,next:NextFunction ) => {
   })
 
 }
+
+/*
+
+{
+    "_id" : ObjectId("5af56592fdd3f82ec0b53fad"),
+    "actionTime" : ISODate("2018-05-11T09:40:50.315Z"),
+    "doctorUpshelf" : 1,
+    "isTop" : 0,
+    "doctorCheckState" : 2,
+    "doctorName" : "驳回哈哈哈",
+    "doctorSex" : 0,
+    "doctorCountry" : "大陆",
+    "hospitalId" : 12,
+    "doctorJob" : "主任医师",
+    "doctorEducation" : "双博士",
+    "doctorGoodat" : "10,11,15",
+    "doctorInfo" : "哇哦哦哦哦哦哦哦哦哦",
+    "bdId" : 7,
+    "doctorZizhi" : "助理执业医师,执业中医师,讲师",
+    "doctorZizhiList" : "[{\"zizhiType\":1,\"uploadUrl\":\"http://localhost:2000/img\\\\doctors\\\\file-1526031758172.jpeg\"},{\"zizhiType\":2,\"uploadUrl\":\"http://localhost:2000/img\\\\doctors\\\\file-1526031759863.jpeg\"},{\"zizhiType\":3,\"uploadUrl\":\"http://localhost:2000/img\\\\doctors\\\\file-1526031761682.jpeg\"}]",
+    "jobStartTime" : ISODate("2018-05-17T00:00:00.000Z"),
+    "key" : 19,
+    "createdAt" : ISODate("2018-05-11T09:42:42.708Z"),
+    "updatedAt" : ISODate("2018-05-12T03:56:51.201Z"),
+    "rejectReason" : "贵了呗",
+    "goodat" : "眼部,还要,还要去写",
+    "__v" : 0,
+    "doctorPhoto" : "{}"
+}
+
+*/

@@ -24,6 +24,7 @@ export interface doctorIf extends mongoose.Document{
   goodat: string[];
   isTop:number;
   [what:string]:any;
+  rejectReason: string,
 }
 
 let doctorS = new mongoose.Schema({
@@ -42,6 +43,7 @@ let doctorS = new mongoose.Schema({
   hospitalId:Number,
   doctorPhoto:JSON,
   doctorZizhiList:JSON,
+  rejectReason:String,
 
   actionTime: { type:Date,default:Date.now()　},
   doctorUpshelf: { type:Number,default:1 },
