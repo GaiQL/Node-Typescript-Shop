@@ -112,6 +112,7 @@ app.get('/findTime',Fn_Add.findTime);
 app.use( '/order',require('./router/order') );
 app.use( '/bd',require('./router/db') );
 app.use( '/doctor',require('./router/doctor') );
+app.use( '/image',require('./router/image') );
 
 
 

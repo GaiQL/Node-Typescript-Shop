@@ -10,7 +10,7 @@ const stringTime_1 = require("../congfig/stringTime");
 const validationResult_1 = require("../congfig/validationResult");
 const fs_1 = __importDefault(require("fs"));
 exports.save_examine = [
-    check_1.body('doctorName').isLength({ min: 1, max: 100 }),
+    check_1.body('doctorName').isLength({ min: 1, max: 50 }),
     check_1.body('doctorCountry').isLength({ min: 1, max: 100 }),
     check_1.body('doctorSex').isLength({ min: 1, max: 1 }).isNumeric().toInt(),
     check_1.body('doctorJob').isLength({ min: 1, max: 100 }),
@@ -46,7 +46,8 @@ exports.find_examine = [
     check_1.body('doctorKey').optional({ checkFalsy: true }).isLength({ min: 0, max: 100 }).isNumeric()
 ];
 exports.find = (req, res, next) => {
-    validationResult_1.validationResult_FN(req, res);
+    if (validationResult_1.validationResult_FN(req, res))
+        return;
     //  全部  审核中  驳回  已置顶  上架中  已下架
     let { type, doctorName, doctorKey } = req.body;
     let find_condition = {};
@@ -95,7 +96,8 @@ exports.editDoctorIsTop_examine = [
 exports.editDoctorIsTop = (req, res, next) => {
     // key
     // isTop
-    validationResult_1.validationResult_FN(req, res);
+    if (validationResult_1.validationResult_FN(req, res))
+        return;
     let promise = doctor_1.modle_doctor.findOne({ key: req.body.key }).exec();
     promise.then((data) => {
         console.log(data);
@@ -121,7 +123,8 @@ exports.findOne_examine = [
     check_1.body('key').isNumeric().isLength({ min: 1, max: 10 })
 ];
 exports.findOne = (req, res, next) => {
-    validationResult_1.validationResult_FN(req, res);
+    if (validationResult_1.validationResult_FN(req, res))
+        return;
     let promise = doctor_1.modle_doctor.findOne({ key: req.body.key }).exec();
     promise.then((data) => {
         let arr = [];
@@ -140,7 +143,8 @@ exports.findOne = (req, res, next) => {
     });
 };
 exports.editDoctor = (req, res, next) => {
-    validationResult_1.validationResult_FN(req, res);
+    if (validationResult_1.validationResult_FN(req, res))
+        return;
     let promise = doctor_1.modle_doctor.findOne({ key: req.body.key }).exec();
     promise.then((data) => {
         console.log(data);
@@ -159,7 +163,8 @@ exports.editDoctor = (req, res, next) => {
     });
 };
 exports.rejectReason = (req, res, next) => {
-    validationResult_1.validationResult_FN(req, res);
+    if (validationResult_1.validationResult_FN(req, res))
+        return;
     let promise = doctor_1.modle_doctor.findOne({ key: req.body.key }, { rejectReason: 1 }).exec();
     promise.then((data) => {
         res.send({ status: 200, data: data.rejectReason });
@@ -167,7 +172,8 @@ exports.rejectReason = (req, res, next) => {
         .catch((err) => { next(err); });
 };
 exports.deleteDoctor = (req, res, next) => {
-    validationResult_1.validationResult_FN(req, res);
+    if (validationResult_1.validationResult_FN(req, res))
+        return;
     doctor_1.modle_doctor.remove({ key: req.body.key }, (err) => {
         if (err)
             next(err);

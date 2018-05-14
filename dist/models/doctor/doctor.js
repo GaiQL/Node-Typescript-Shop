@@ -45,5 +45,14 @@ doctorS.pre('save', function (next) {
         next();
     });
 });
+doctorS.pre('save', function (next) {
+    let data = this;
+    let arr = JSON.parse(data.doctorZizhiList);
+    arr.forEach((e, i) => {
+        e.key = i;
+    });
+    data.doctorZizhiList = JSON.stringify(arr);
+    next();
+});
 exports.modle_doctor = mongoose_1.default.model('doctor', doctorS);
 //# sourceMappingURL=doctor.js.map

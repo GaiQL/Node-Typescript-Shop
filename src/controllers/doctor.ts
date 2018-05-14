@@ -13,7 +13,7 @@ interface imgIf{
 }
 
 export let save_examine = [
-  body( 'doctorName' ).isLength({ min:1,max:100 }),
+  body( 'doctorName' ).isLength({ min:1,max:50 }),
   body( 'doctorCountry' ).isLength({ min:1,max:100 }),
   body( 'doctorSex' ).isLength({ min:1,max:1 }).isNumeric().toInt(),
   body( 'doctorJob' ).isLength({ min:1,max:100 }),
@@ -57,7 +57,7 @@ export let find_examine = [
 
 export let find = ( req:Request,res:Response,next:NextFunction ) => {
 
-  validationResult_FN( req,res );
+  if( validationResult_FN( req,res ) ) return;
 
   interface find_condition_IF{
     doctorCheckState?:number;
@@ -121,7 +121,7 @@ export let editDoctorIsTop_examine = [
 export let editDoctorIsTop = ( req:Request,res:Response,next:NextFunction ) => {
   // key
   // isTop
-  validationResult_FN( req,res );
+  if( validationResult_FN( req,res ) ) return;
 
   let promise = modle_doctor.findOne( { key:req.body.key } ).exec();
   promise.then(( data:doctorIf )=>{
@@ -150,7 +150,7 @@ export let findOne_examine = [
 
 export let findOne = ( req:Request,res:Response,next:NextFunction ) => {
 
-  validationResult_FN( req,res );
+  if( validationResult_FN( req,res ) ) return;
 
   let promise = modle_doctor.findOne( { key:req.body.key } ).exec();
   promise.then(( data:doctorIf )=>{
@@ -175,7 +175,7 @@ export let findOne = ( req:Request,res:Response,next:NextFunction ) => {
 
 export let editDoctor = ( req:Request,res:Response,next:NextFunction ) => {
 
-  validationResult_FN( req,res );
+  if( validationResult_FN( req,res ) ) return;
 
   let promise = modle_doctor.findOne( { key:req.body.key } ).exec();
   promise.then(( data:doctorIf )=>{
@@ -196,7 +196,7 @@ export let editDoctor = ( req:Request,res:Response,next:NextFunction ) => {
 
 export let rejectReason = ( req:Request,res:Response,next:NextFunction ) => {
 
-  validationResult_FN( req,res );
+  if( validationResult_FN( req,res ) ) return;
   let promise = modle_doctor.findOne( { key:req.body.key },{ rejectReason:1 } ).exec();
   promise.then(( data:doctorIf )=>{
     res.send({ status:200,data:data.rejectReason });
@@ -207,7 +207,7 @@ export let rejectReason = ( req:Request,res:Response,next:NextFunction ) => {
 
 export let deleteDoctor = ( req:Request,res:Response,next:NextFunction ) => {
 
-  validationResult_FN( req,res );
+  if( validationResult_FN( req,res ) ) return;
   modle_doctor.remove( { key:req.body.key } ,( err:Error )=>{
     if( err ) next( err );
     res.send({ status:200,message:'删除医生成功' });
@@ -230,6 +230,7 @@ export let save_Img = ( req:Request,res:Response,next:NextFunction ) => {
   }
   res.send( data );
   res.end();
+  
 }
 
 export let delete_Img_examine = [

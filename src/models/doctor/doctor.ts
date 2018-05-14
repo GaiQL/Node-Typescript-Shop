@@ -75,4 +75,16 @@ doctorS.pre('save',function( next:NextFunction ){
 
 })
 
+doctorS.pre('save',function( next:NextFunction ){
+
+  let data:any = this;
+  let arr = JSON.parse( data.doctorZizhiList );
+  arr.forEach(( e:any,i:number )=>{
+    e.key = i
+  })
+  data.doctorZizhiList = JSON.stringify( arr );
+  next();
+
+})
+
 export let modle_doctor = mongoose.model( 'doctor',doctorS );

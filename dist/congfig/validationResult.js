@@ -11,5 +11,6 @@ exports.validationResult_FN = (req, res) => {
         });
         res.end();
     }
+    return !errors.isEmpty();
 };
 //# sourceMappingURL=validationResult.js.map

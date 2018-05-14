@@ -12,5 +12,8 @@ export let validationResult_FN = ( req:Request,res:Response ) => {
     })
     res.end();
   }
+  return !errors.isEmpty()
 
 }
+
+   
