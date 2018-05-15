@@ -230,9 +230,9 @@ export let save_Img = ( req:Request,res:Response,next:NextFunction ) => {
   }
   res.send( data );
   res.end();
-  
-}
 
+}
+  
 export let delete_Img_examine = [
   body( 'fileName' ).isLength({ min:5,max:100 })
 ]

@@ -24,6 +24,7 @@ const path_1 = __importDefault(require("path"));
 const compression_1 = __importDefault(require("compression"));
 const ejs_1 = __importDefault(require("ejs"));
 const express_session_1 = __importDefault(require("express-session"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const connect_mongo_1 = __importDefault(require("connect-mongo"));
 // http://ju.outofmemory.cn/entry/99459  passport好文；
 const passport_1 = __importDefault(require("passport"));
@@ -45,6 +46,7 @@ mongoose_1.default.connection.on("error", function (error) {
 mongoose_1.default.connection.on("open", function () {
     console.log("数据库连接成功");
 });
+app.use(cookie_parser_1.default('secret'));
 app.use(compression_1.default());
 app.use(lusca_1.default.xframe("SAMEORIGIN"));
 app.use(lusca_1.default.xssProtection(true));
@@ -94,6 +96,8 @@ app.use('/order', require('./router/order'));
 app.use('/bd', require('./router/db'));
 app.use('/doctor', require('./router/doctor'));
 app.use('/image', require('./router/image'));
+app.use('/hospital', require('./router/hospital'));
+app.use('/area', require('./router/area'));
 // 错误处理
 function logErrors(err, req, res, next) {
     console.error(err.stack);

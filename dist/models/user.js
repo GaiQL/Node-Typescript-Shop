@@ -15,17 +15,46 @@ var userSchema = new mongoose_1.default.Schema({
     key: Number,
     checkStatusValue: String,
     accountTypeValue: String,
-    accountType: Number,
     checkStatus: Number,
     hospitalLogo: String,
-    hospitalName: String
+    hospitalName: String,
+    ziZhi: Array,
+    hospStyle: Number,
+    authFileUrl: String,
+    hospAddress: String,
+    openTimeStart: String,
+    openTimeOver: String,
+    goodatProject: String,
+    hospName: String,
+    hospType: String,
+    provinceId: Number,
+    provinceName: String,
+    cityId: Number,
+    cityName: String,
+    areaId: Number,
+    areaName: String,
+    lat: String,
+    lon: String,
+    bdName: String,
+    typeName: String,
+    hospInfo: String,
+    hospLogo: String,
+    hospPhotos: String,
+    contactTelephone: String,
+    contactMobile: String,
+    contactName: String,
+    contactQQ: String,
+    contactEmail: String,
+    accountType: Number,
+    bankAccount: String,
+    bankName: String,
+    bankInfo: String,
+    accountHolder: String,
 }, { timestamps: true });
 userSchema.pre('save', function (next) {
     const user = this;
-    console.log(user);
     //   ???????????  握草，就想不明白为什么this.account会报错！！！！！！  他说this类型是 mongoose.Document?????  // console.log( this.account )
     //  this的类型不应该是 UserModelIF 么；
-    console.log(user.account);
     if (!this.isModified("password"))
         return next();
     bcrypt_nodejs_1.default.genSalt(10, (err, salt) => {

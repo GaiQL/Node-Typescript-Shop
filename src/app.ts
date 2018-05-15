@@ -14,6 +14,7 @@ import path from "path";
 import compression from "compression";
 import ejs from 'ejs';
 import session from "express-session";
+import cookieParser from 'cookie-parser';
 import mongo from "connect-mongo";
 
 // http://ju.outofmemory.cn/entry/99459  passport好文；
@@ -46,6 +47,8 @@ mongoose.connection.on("error", function( error:Error ){
 mongoose.connection.on("open", function(){
   console.log("数据库连接成功")
 })
+
+app.use( cookieParser( 'secret' ) );
 
 app.use(compression());
 
@@ -113,6 +116,8 @@ app.use( '/order',require('./router/order') );
 app.use( '/bd',require('./router/db') );
 app.use( '/doctor',require('./router/doctor') );
 app.use( '/image',require('./router/image') );
+app.use( '/hospital',require('./router/hospital') );
+app.use( '/area',require('./router/area') );
 
 
 

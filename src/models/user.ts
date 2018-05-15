@@ -7,7 +7,48 @@ export interface UserModelIF extends mongoose.Document{
   account: string,
   password: string,
   key:number,
-  comparePassword:ComparePassword
+  comparePassword:ComparePassword,
+
+  checkStatusValue: String,
+  accountTypeValue: String,
+  checkStatus: Number,
+  hospitalLogo: String,
+  hospitalName: String,
+
+  ziZhi: any[],
+  hospStyle: number;
+  authFileUrl: string;
+  hospAddress: string;
+  openTimeStart: string;
+  openTimeOver: string;
+  goodatProject: string;
+
+  hospName: string;
+  hospType: string;
+  provinceId: number;
+  provinceName: string;
+  cityId: number;
+  cityName:string;
+  areaId: number;
+  areaName: string;
+  lat: string;
+  lon: string;
+  bdName: string;
+  typeName: string;
+  hospInfo: string;
+  hospLogo: string;
+  hospPhotos: string;
+  contactTelephone: string;
+  contactMobile: string;
+  contactName: string;
+  contactQQ: string;
+  contactEmail: string;
+  accountType: number;
+  bankAccount: string;
+  bankName: string;
+  bankInfo: string;
+  accountHolder: string;
+  [hei:string] :any;
   // speak 方法；
 }
 
@@ -21,22 +62,52 @@ var userSchema = new mongoose.Schema({
     key: Number,
     checkStatusValue: String,
     accountTypeValue: String,
-    accountType: Number,
     checkStatus: Number,
     hospitalLogo: String,
-    hospitalName: String
+    hospitalName: String,
+
+    ziZhi: Array,
+    hospStyle: Number,
+    authFileUrl: String,
+    hospAddress: String,
+    openTimeStart: String,
+    openTimeOver: String,
+    goodatProject: String,
+
+    hospName: String,
+    hospType: String,
+    provinceId: Number,
+    provinceName: String,
+    cityId: Number,
+    cityName:String,
+    areaId: Number,
+    areaName: String,
+    lat: String,
+    lon: String,
+    bdName: String,
+    typeName: String,
+    hospInfo: String,
+    hospLogo: String,
+    hospPhotos: String,
+    contactTelephone: String,
+    contactMobile: String,
+    contactName: String,
+    contactQQ: String,
+    contactEmail: String,
+    accountType: Number,
+    bankAccount: String,
+    bankName: String,
+    bankInfo: String,
+    accountHolder: String,
 
 }, { timestamps: true })
 
 userSchema.pre('save',function( next:any ){
 
   const user:any = this;
-  console.log( user );
 
   //   ???????????  握草，就想不明白为什么this.account会报错！！！！！！  他说this类型是 mongoose.Document?????  // console.log( this.account )
   //  this的类型不应该是 UserModelIF 么；
-
-  console.log( user.account );
   if( !this.isModified("password") )return next();
 
   bcrypt.genSalt(10, (err, salt) => {

@@ -1,5 +1,6 @@
 import { Request,Response,NextFunction } from 'express';
 import { body,validationResult } from 'express-validator/check';
+import { deleteImage_FN } from '../congfig/deleteImage';
 import fs from 'fs';
 
 // export let deleteImage_examine = [
@@ -14,16 +15,8 @@ interface imgIf{
 
 export let deleteImage = ( req:Request,res:Response,next:NextFunction ) => {
 
-  try{
-    req.body.imgUrl.split(',').forEach(( e:string,i:number )=>{
-      fs.unlinkSync( 'img' + e.split('img')[1] );
-    })
-    res.send({ status:200,message:'success' });
-  }catch( err ){
-    res.send({ status:500,message:'some error' });
-  }
-  res.end();
-
+  deleteImage_FN( req.body.imgUrl,res );
+  
 }
 
 export let imageSave = ( req:Request,res:Response,next:NextFunction ) => {

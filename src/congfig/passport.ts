@@ -44,7 +44,7 @@ export let LocalStrategyMethod = ():Strategy => {
 }
 
 export let isAuthenticated = ( req:Request,res:Response,next:NextFunction ) => {
-  console.log( req.isAuthenticated() );
+  // console.log( req.isAuthenticated() );
   if( req.isAuthenticated() ){
     return next();
   }

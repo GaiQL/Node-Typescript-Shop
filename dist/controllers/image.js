@@ -1,20 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-}
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_1 = __importDefault(require("fs"));
+const deleteImage_1 = require("../congfig/deleteImage");
 exports.deleteImage = (req, res, next) => {
-    try {
-        req.body.imgUrl.split(',').forEach((e, i) => {
-            fs_1.default.unlinkSync('img' + e.split('img')[1]);
-        });
-        res.send({ status: 200, message: 'success' });
-    }
-    catch (err) {
-        res.send({ status: 500, message: 'some error' });
-    }
-    res.end();
+    deleteImage_1.deleteImage_FN(req.body.imgUrl, res);
 };
 exports.imageSave = (req, res, next) => {
     let data = {};
