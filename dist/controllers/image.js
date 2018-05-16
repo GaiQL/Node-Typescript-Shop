@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const deleteImage_1 = require("../congfig/deleteImage");
 exports.deleteImage = (req, res, next) => {
-    deleteImage_1.deleteImage_FN(req.body.imgUrl, res);
+    deleteImage_1.deleteImage_FN(req.body.imgUrl || req.body.fileName, res);
 };
 exports.imageSave = (req, res, next) => {
     let data = {};

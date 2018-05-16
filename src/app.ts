@@ -118,6 +118,7 @@ app.use( '/doctor',require('./router/doctor') );
 app.use( '/image',require('./router/image') );
 app.use( '/hospital',require('./router/hospital') );
 app.use( '/area',require('./router/area') );
+app.use( '/product',require('./router/product') );
 
 
 

@@ -48,6 +48,10 @@ export interface UserModelIF extends mongoose.Document{
   bankName: string;
   bankInfo: string;
   accountHolder: string;
+  promiseList: [{
+    promiseId:number;
+    promiseTitle:string;
+  }];
   [hei:string] :any;
   // speak 方法；
 }
@@ -99,6 +103,10 @@ var userSchema = new mongoose.Schema({
     bankName: String,
     bankInfo: String,
     accountHolder: String,
+    promiseList:[{
+      promiseId:Number,
+      promiseTitle:String
+    }]
 
 }, { timestamps: true })
 

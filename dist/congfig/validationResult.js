@@ -13,4 +13,18 @@ exports.validationResult_FN = (req, res) => {
     }
     return !errors.isEmpty();
 };
+exports.validationResult_middleware = (req, res, next) => {
+    const errors = check_1.validationResult(req);
+    if (!errors.isEmpty()) {
+        res.send({
+            status: 422,
+            data: '参数有误',
+            message: errors.mapped()
+        });
+        res.end();
+    }
+    else {
+        next();
+    }
+};
 //# sourceMappingURL=validationResult.js.map

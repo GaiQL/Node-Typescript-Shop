@@ -15,24 +15,38 @@ exports.info_find = (req, res, next) => {
     });
 };
 exports.editDoctorIsTop_examine = [
-    check_1.body('hospLogo').isLength({ min: 1, max: 200 })
+    check_1.body('hospLogo').isLength({ min: 1, max: 200 }),
+    validationResult_1.validationResult_middleware
 ];
-let oneParamsChange = (req, res, next, str, message) => {
+exports.editHospInfo_examine = [
+    check_1.body('hospInfo').isLength({ min: 1, max: 200 }),
+    validationResult_1.validationResult_middleware
+];
+exports.editHospContact_examine = [
+    check_1.body('contactName').isLength({ min: 1, max: 20 }),
+    check_1.body('contactMobile').isLength({ min: 11, max: 11 }).isNumeric(),
+    check_1.body('contactEmail').optional({ checkFalsy: true }).isLength({ min: 1, max: 100 }).isEmail(),
+    check_1.body('contactTelephone').optional({ checkFalsy: true }).isLength({ min: 1, max: 20 }).isNumeric(),
+    check_1.body('contactQQ').optional({ checkFalsy: true }).isLength({ min: 1, max: 20 }).isNumeric(),
+    validationResult_1.validationResult_middleware
+];
+// 多张图片逗号隔开字符串，设计到设置主图传对象index，存储为JSON对象
+exports.editHospPhotos_examine = [
+    check_1.body('hospPhotos').optional({ checkFalsy: true }).isLength({ min: 1, max: 1000 }),
+];
+exports.info_edit = (req, res, next) => {
     let promise = user_1.default.findOne({ key: req.signedCookies.key }).exec();
     promise.then((data) => {
-        data[str] = req.body[str];
+        for (let key in req.body) {
+            data[key] = req.body[key];
+        }
         data.save((err) => {
             if (err)
                 next(err);
-            res.send({ status: 200, message });
+            res.send({ status: 200, message: '修改成功' });
             res.end();
         });
     });
-};
-exports.info_edit = (req, res, next) => {
-    if (validationResult_1.validationResult_FN(req, res))
-        return;
-    oneParamsChange(req, res, next, 'hospLogo', '修改Logo成功');
 };
 exports.delete_Img = (req, res, next) => {
     deleteImage_1.deleteImage_FN(req.body.fileName, res);

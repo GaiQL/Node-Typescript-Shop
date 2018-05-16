@@ -98,6 +98,7 @@ app.use('/doctor', require('./router/doctor'));
 app.use('/image', require('./router/image'));
 app.use('/hospital', require('./router/hospital'));
 app.use('/area', require('./router/area'));
+app.use('/product', require('./router/product'));
 // 错误处理
 function logErrors(err, req, res, next) {
     console.error(err.stack);

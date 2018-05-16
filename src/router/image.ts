@@ -10,7 +10,8 @@ let upload = multer_storage('img/doctorsPhoto');
 
 router.post('/delete_image.do',Fn_image.deleteImage);
 router.post('/upload_image_to_server.do',upload.single('file'),Fn_image.imageSave);
+// router.post('/upload_image_to_server.do',( req:Request )=>{ console.log(123);multer_storage('img/'+req.body.targetPath).single('file') },Fn_image.imageSave);
+
+
 // router.get('/listBdInfo.do',Fn_db.find);
-
-
 module.exports = router;

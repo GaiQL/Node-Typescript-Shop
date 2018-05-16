@@ -50,6 +50,10 @@ var userSchema = new mongoose_1.default.Schema({
     bankName: String,
     bankInfo: String,
     accountHolder: String,
+    promiseList: [{
+            promiseId: Number,
+            promiseTitle: String
+        }]
 }, { timestamps: true });
 userSchema.pre('save', function (next) {
     const user = this;

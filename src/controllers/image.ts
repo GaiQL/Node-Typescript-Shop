@@ -15,8 +15,8 @@ interface imgIf{
 
 export let deleteImage = ( req:Request,res:Response,next:NextFunction ) => {
 
-  deleteImage_FN( req.body.imgUrl,res );
-  
+  deleteImage_FN( req.body.imgUrl || req.body.fileName,res );
+
 }
 
 export let imageSave = ( req:Request,res:Response,next:NextFunction ) => {
