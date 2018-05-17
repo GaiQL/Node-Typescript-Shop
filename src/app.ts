@@ -20,6 +20,8 @@ import mongo from "connect-mongo";
 // http://ju.outofmemory.cn/entry/99459  passport好文；
 import passport from "passport";
 import passportLocal from "passport-local";
+// import ueditor from 'ueditor';
+let ueditor = require( 'ueditor' );
 import { Request,Response,NextFunction } from 'express';
 
 // var express = require('express');
@@ -30,6 +32,7 @@ import * as Fn_Add from './controllers/add';
 import * as Fn_Home from './controllers/index';
 import * as Fn_Login from './controllers/login';
 import { default as model,UserModelIF } from './models/user';
+import fs from 'fs';
 
 var app = express();
 
@@ -48,11 +51,16 @@ mongoose.connection.on("open", function(){
   console.log("数据库连接成功")
 })
 
+
+
+
+
+
 app.use( cookieParser( 'secret' ) );
 
 app.use(compression());
 
-app.use(lusca.xframe("SAMEORIGIN"));
+// app.use(lusca.xframe("SAMEORIGIN"));
 app.use(lusca.xssProtection(true));
 
 app.engine('html', ejs.renderFile)  ;
@@ -71,6 +79,55 @@ app.use(bodyParser.json())   //解析json数据
 app.use(express.static(path.join(__dirname, "public"), { maxAge: 31557600000 }));
 app.use('/img', express.static('img'));
 
+// 潦草的跨域解决方案， cors设置白名单限制；
+app.all('*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", 'http://localhost:9098');
+  res.header("Access-Control-Allow-Headers", "X_Requested_With");
+  res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+  res.header("X-Powered-By",' 3.2.1');
+  res.header("Content-Type", "application/json;charset=utf-8");
+  res.setHeader('Access-Control-Allow-Credentials', 'true');  //设置为true，可以跨域带上cookie申请端
+  next();
+});
+
+app.use("/ueditor/ue", ueditor(path.join(__dirname, 'public'), function(req:any, res:any, next:NextFunction) {
+  // ueditor 客户发起上传图片请求
+  console.log( req.query );
+  if(req.query.action === 'uploadimage'){
+    var foo = req.ueditor;
+    var date = new Date();
+    console.log( req.ueditor.filename )
+    var imgname = req.ueditor.filename;
+
+    var img_url = '/images/ueditor/';
+    // res.setHeader('Content-Type', 'MIME');
+    res.ue_up(img_url); //你只要输入要保存的地址 。保存操作交给ueditor来做
+    res.setHeader('Content-Type', 'text/html');
+  }
+  //  客户端发起图片列表请求
+  else if (req.query.action === 'listimage'){
+    var dir_url = '/images/ueditor/';
+    res.ue_list(dir_url);  // 客户端会列出 dir_url 目录下的所有图片
+  }
+  // 客户端发起其它请求
+  else {
+
+    // res.setHeader('Content-Type', 'application/json');
+    fs.readFile('./dist/public/ueditor/ueditor.config.json',( err,data )=>{
+      if( err ){ next(err) }
+      res.jsonp( JSON.parse(data.toString()) )
+    })
+    // res.jsonp({"imageActionName": "uploadimage"});
+    // res.end();
+    // res.jsonp('/ueditor/ueditor.config.json');
+
+}}));
+
+
+
+
+
+
 app.use(session({
   secret: 'Random',
   resave: false,
@@ -83,17 +140,6 @@ app.use(session({
   })
 }));
 
-
-// 潦草的跨域解决方案， cors设置白名单限制；
-app.all('*', function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", 'http://localhost:9098');
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
-  res.header("X-Powered-By",' 3.2.1');
-  res.header("Content-Type", "application/json;charset=utf-8");
-  res.setHeader('Access-Control-Allow-Credentials', 'true');  //设置为true，可以跨域带上cookie申请端
-  next();
-});
 
 app.use(passport.initialize());
 app.use(passport.session());

@@ -28,12 +28,15 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const connect_mongo_1 = __importDefault(require("connect-mongo"));
 // http://ju.outofmemory.cn/entry/99459  passport好文；
 const passport_1 = __importDefault(require("passport"));
+// import ueditor from 'ueditor';
+let ueditor = require('ueditor');
 // var express = require('express');
 // var router = express.Router();
 const passportConfig = __importStar(require("./congfig/passport"));
 const Fn_Add = __importStar(require("./controllers/add"));
 const Fn_Home = __importStar(require("./controllers/index"));
 const Fn_Login = __importStar(require("./controllers/login"));
+const fs_1 = __importDefault(require("fs"));
 var app = express_1.default();
 let listener = app.listen(2000);
 dotenv_1.default.config({ path: ".env.example" });
@@ -48,7 +51,7 @@ mongoose_1.default.connection.on("open", function () {
 });
 app.use(cookie_parser_1.default('secret'));
 app.use(compression_1.default());
-app.use(lusca_1.default.xframe("SAMEORIGIN"));
+// app.use(lusca.xframe("SAMEORIGIN"));
 app.use(lusca_1.default.xssProtection(true));
 app.engine('html', ejs_1.default.renderFile);
 app.set('views', __dirname + '/public');
@@ -59,6 +62,46 @@ app.use(body_parser_1.default.urlencoded({ extended: true })); //解析UTF-8的�
 app.use(body_parser_1.default.json()); //解析json数据
 app.use(express_1.default.static(path_1.default.join(__dirname, "public"), { maxAge: 31557600000 }));
 app.use('/img', express_1.default.static('img'));
+// 潦草的跨域解决方案， cors设置白名单限制；
+app.all('*', function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", 'http://localhost:9098');
+    res.header("Access-Control-Allow-Headers", "X_Requested_With");
+    res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
+    res.header("X-Powered-By", ' 3.2.1');
+    res.header("Content-Type", "application/json;charset=utf-8");
+    res.setHeader('Access-Control-Allow-Credentials', 'true'); //设置为true，可以跨域带上cookie申请端
+    next();
+});
+app.use("/ueditor/ue", ueditor(path_1.default.join(__dirname, 'public'), function (req, res, next) {
+    // ueditor 客户发起上传图片请求
+    console.log(req.query);
+    if (req.query.action === 'uploadimage') {
+        var foo = req.ueditor;
+        var date = new Date();
+        console.log(req.ueditor.filename);
+        var imgname = req.ueditor.filename;
+        var img_url = '/images/ueditor/';
+        // res.setHeader('Content-Type', 'MIME');
+        res.ue_up(img_url); //你只要输入要保存的地址 。保存操作交给ueditor来做
+        res.setHeader('Content-Type', 'text/html');
+    }
+    else if (req.query.action === 'listimage') {
+        var dir_url = '/images/ueditor/';
+        res.ue_list(dir_url); // 客户端会列出 dir_url 目录下的所有图片
+    }
+    else {
+        // res.setHeader('Content-Type', 'application/json');
+        fs_1.default.readFile('./dist/public/ueditor/ueditor.config.json', (err, data) => {
+            if (err) {
+                next(err);
+            }
+            res.jsonp(JSON.parse(data.toString()));
+        });
+        // res.jsonp({"imageActionName": "uploadimage"});
+        // res.end();
+        // res.jsonp('/ueditor/ueditor.config.json');
+    }
+}));
 app.use(express_session_1.default({
     secret: 'Random',
     resave: false,
@@ -70,16 +113,6 @@ app.use(express_session_1.default({
         touchAfter: 24 * 3600
     })
 }));
-// 潦草的跨域解决方案， cors设置白名单限制；
-app.all('*', function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", 'http://localhost:9098');
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
-    res.header("X-Powered-By", ' 3.2.1');
-    res.header("Content-Type", "application/json;charset=utf-8");
-    res.setHeader('Access-Control-Allow-Credentials', 'true'); //设置为true，可以跨域带上cookie申请端
-    next();
-});
 app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
 app.get('/save', Fn_Login.save);
